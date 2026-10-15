@@ -252,32 +252,89 @@ gh pr checks
 下面的提示词用于本项目的 Python 代码生成和审查，可复制到 Codex 或其他代码助手。具体任务要求优先于本提示词。
 
 ```text
-你正在为金融数据分析课程项目编写 Python。优先保证代码的可读性、可维护性、可复用性、一致性和研究结果的可复现性。
+当你需要编写 python 代码时，请严格遵循以下规范。优先保证代码的可读性、可维护性、可复用性和一致性。
 
-1. 具有明确状态、职责或生命周期的业务逻辑优先使用面向对象设计；简单工具逻辑使用函数即可。遵循单一职责，数据读取、清洗、计算、后处理和保存应保持清晰边界。避免过度封装和深层嵌套，优先使用 guard clause。
+## 1. 逻辑规范
 
-2. 遵循 PEP 8。同一函数中的不同语义块空一行，同级函数和类之间空两行。运算符两侧留空格。函数定义或调用超过 3 个参数时使用多行格式，每行一个参数并保留 trailing comma。避免过长表达式和模糊缩写。
+- 优先采用面向对象的方式组织具有明确状态、职责或生命周期的业务逻辑；简单工具逻辑无需强行封装为类。
+- 遵循单一职责原则，一个函数只完成一个相对独立的语义功能，避免在单个函数中混合数据读取、预处理、计算、后处理、保存等多个复杂阶段。
+- 可独立描述、重复使用或具有明确业务含义的逻辑，应抽象为独立函数、方法或类。
+- 避免过度封装，不要为了减少函数行数而拆分没有独立语义的代码。
+- 尽量减少深层嵌套，优先使用 early return、guard clause 等清晰的控制流。
+- 优先复用已有代码，不重复实现相同逻辑，不进行与当前需求无关的重构。
 
-3. 函数参数、返回值和重要变量提供明确类型注解。Tensor 或 ndarray 必须在类型注解、docstring 或邻近注释中说明 dtype、shape 和各维含义，以及 shape 变化关系。函数和变量使用 snake_case，类使用 PascalCase，常量使用 UPPER_SNAKE_CASE；布尔值优先使用 is_、has_、can_ 或 should_ 前缀。
+## 2. 书写规范
 
-4. 除极简单的内部辅助函数外，函数必须提供 docstring，至少包含主要功能、Args 和 Returns；必要时增加 Raises 和 Notes。公共接口需要检查可能造成错误或隐蔽结果的类型、shape、范围和合法性。错误信息必须包含参数名、期望条件和实际值。
+- 整体遵循 PEP 8，并优先采用简洁、清晰的 Pythonic 写法。
+- 函数内部不同语义块之间空 **1 行**；同级函数、类之间空 **2 行**；明显独立的大型语义区域之间可空 **3 行**。
+- 运算符、赋值符两侧保留一个空格；逗号后保留一个空格；括号内部不要添加无意义空格。
+- 当函数定义或调用的参数 **超过 3 个**时，使用多行格式：左括号后换行，每行一个参数，右括号单独一行，并保留 trailing comma。
+- 避免过长的单行表达式；复杂表达式应合理换行。
+- 优先使用 f-string、comprehension、enumerate、zip、with、dataclass 等 Pythonic 写法，但不要为了简短而降低可读性。
 
-5. 注释解释原因、约束、数值稳定性、shape 变换或兼容逻辑，不重复代码本身。
+## 3. 类型与命名规范
 
-6. 金融数据接口失败时显式报错，不返回模拟数据。所有收益率明确百分数、小数或 bp 单位。回测信号必须避免前视偏差，交易成本和日期对齐方式必须在代码或文档中说明。
+- 函数参数、返回值及重要变量原则上都应提供明确的类型注解。
+- 对 `Tensor`、`ndarray` 等多维数据，除数据类型外，应在类型注解、docstring 或邻近注释中明确其 **shape 及各维度含义**，例如 `[batch_size, channels, height, width]`。
+- 当 shape 会发生变化时，应明确输入和输出 shape 的对应关系。
+- 变量、函数使用 `snake_case`，类使用 `PascalCase`，常量使用 `UPPER_SNAKE_CASE`。
+- 命名必须表达实际语义，避免 `tmp`、`data1`、`foo`、`obj`、`res` 等含义模糊的名称。
+- 布尔变量优先使用 `is_`、`has_`、`can_`、`should_` 等前缀。
+- 集合变量通常使用复数形式，单个对象使用单数形式。
 
-7. 优先复用现有实现，不重复代码，不进行与当前任务无关的重构。生成代码后自行检查上述要求，运行适当的语法检查和测试，再提交结果。
+## 4. 函数与 Docstring 规范
+
+除极简单的内部辅助函数外，函数应提供 docstring，至少说明：
+
+1. **主要功能**：函数解决什么问题以及核心行为。
+2. **Args**：每个输入参数的含义、类型、格式；对于 Tensor / Array，应注明 shape、dtype 以及各维度含义。
+3. **Returns**：返回值的含义、类型、格式；对于 Tensor / Array，应注明输出 shape。
+4. **Raises（可选）**：可能主动抛出的主要异常。
+5. **Notes（可选）**：特殊约束、单位、坐标系、数值范围、算法假设、副作用等额外说明。
+
+推荐格式：
+
+```python
+def normalize_images(
+    images: torch.Tensor,
+    mean: torch.Tensor,
+    std: torch.Tensor,
+) -> torch.Tensor:
+    """Normalize a batch of images channel-wise.
+
+    Args:
+        images: Input images with shape [B, C, H, W], dtype float32.
+        mean: Channel means with shape [C].
+        std: Channel standard deviations with shape [C].
+
+    Returns:
+        Normalized images with shape [B, C, H, W].
+
+    Raises:
+        ValueError: If the channel dimensions do not match.
+
+    Notes:
+        Input pixel values are expected to be in [0, 1].
+    """
 ```
 
-## 附录 C：Pull Request 检查清单
+函数一般应对关键输入进行必要的类型、shape、范围或合法性检查，尤其是公共接口和数据处理边界。检查应针对可能导致错误或产生隐蔽结果的条件，避免对内部已确定的数据进行大量重复检查。
 
-- [ ] 关联了 Issue，范围单一且描述清楚；
-- [ ] 没有密钥、本地路径、大型数据和临时输出；
-- [ ] 代码通过语法检查和相关测试；
-- [ ] Notebook 可以重启内核后顺序运行；
-- [ ] 数据来源、日期和单位有记录；
-- [ ] 无模拟市场数据和静默失败；
-- [ ] 无前视偏差，调仓日期和交易成本实现正确；
-- [ ] 图表使用 Plotly，结论与结果一致；
-- [ ] 公共接口包含类型注解、docstring 和必要输入检查；
-- [ ] 至少一名其他成员完成评审。
+错误信息应明确指出参数名称、期望条件和实际情况，例如：
+
+```python
+if images.ndim != 4:
+    raise ValueError(
+        f"Expected 'images' to have 4 dimensions [B, C, H, W], "
+        f"but got shape {tuple(images.shape)}."
+    )
+```
+
+## 5. 注释规范
+
+- 注释主要解释“为什么这样做”、特殊约束和非显然逻辑，而不是重复代码本身已经表达的内容。
+- 复杂算法、特殊 shape 变换、数值稳定性处理、兼容性逻辑等应提供必要说明。
+- 不添加无意义或显而易见的注释。
+
+生成代码后，请自行检查上述规范并修正明显不符合要求的内容，再输出最终代码。
+```
