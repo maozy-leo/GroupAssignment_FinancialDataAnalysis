@@ -1,34 +1,90 @@
 # Financial Data Analysis Group Assignment
 
-北京大学《金融数据分析导论》2026 秋季学期小组作业协作仓库。
+本仓库为 2026 年秋《金融数据分析导论》第 12 小组作业项目。Assignment 1 研究中国权益市场、债券市场及股债配置，以沪深 300 和上证国债指数为核心资产，其他指数用于比较和稳健性检验。
 
-本项目面向一笔“五年后到期、目标稳健增值”的资金，研究中国股票与债券市场的收益风险特征，并比较固定 60/40、风险平价和目标日期等股债配置方案。
+## 小组成员
 
-## 项目结构
+- 数学科学学院 2023 级 李彦臻
+- 数学科学学院 2024 级 毛志远
+- 数学科学学院 2024 级 霍彬然
+- 数学科学学院 2024 级 李俊涛
+
+## 当前进度
+
+| 模块 | 内容 | 状态 |
+|---|---|---|
+| 模块 1 | 数据下载、DuckDB 入库、清洗与质量校验 | 已完成 |
+| 模块 2 | 权益收益分布、滚动指标、股债相关性与事件分析 | 任务口径已确定，待实现 |
+| 模块 3 | Nelson–Siegel、久期凸性、压力测试与利率敏感度 | 任务口径已确定，待实现 |
+| 模块 4 | 股债配置、回测、成本与稳健性 | 待实现 |
+| 模块 5 | 研究报告、局限性与分工声明 | 待实现 |
+
+## 仓库结构
 
 ```text
-.
-├── Assignment1/              # 第一次小组作业：代码、提案和报告
+GroupAssignment_FinancialDataAnalysis/
+├── Assignment1/
+│   ├── data/
+│   │   ├── data.duckdb
+│   │   ├── data_config.py
+│   │   ├── download_and_ingest.py
+│   │   ├── clean_data.py
+│   │   ├── validate_data.py
+│   │   ├── cleaning_summary.json
+│   │   ├── validation_results.json
+│   │   ├── 数据说明.md
+│   │   └── 数据质量报告.md
+│   └── 任务说明.md
+├── docs/
+│   ├── GitHub协作说明.md
+│   └── 技术栈说明.md
 ├── utils/
-│   └── findata_lib.py        # 仅访问真实在线数据的数据接口
-├── GitHub协作说明.md          # Git/GitHub 协作流程与代码规范
-├── README.md
+│   └── findata_lib.py
+├── requirements.txt
 └── requirements_full.txt
 ```
 
-## 环境与数据原则
+模块 2—4 实现后，分析代码、图表和结果分别放入 `Assignment1/analysis/`、`Assignment1/figures/` 和 `Assignment1/output/`。
 
-- Python 3.11；依赖版本见 `requirements_full.txt`。
-- 原始数据自 2018-01-01 起获取，正式分析自 2019-01-01 起进行。
-- 分析数据统一整理至 DuckDB，但数据库和原始数据不直接提交到 Git。
-- 数据接口失败时必须显式报错，禁止使用模拟数据代替真实市场数据。
-- 图表统一使用 Plotly。
+## 环境
 
-## 主要交付物
+项目统一使用上层课程目录中的虚拟环境。在项目根目录执行：
 
-- 可顺序运行的 Jupyter Notebook；
-- 可复现的数据获取和 DuckDB 建库流程；
-- Markdown/PDF 研究报告；
-- 小组分工与 AI 工具使用声明。
+```bash
+source ../.venv/bin/activate
+```
 
-详细研究计划见 `Assignment1/proposal.md`，协作方式见 `GitHub协作说明.md`。
+如需重新安装核心依赖：
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+`requirements.txt` 为项目核心依赖，`requirements_full.txt` 为完整环境快照。
+
+## 模块 1 运行方式
+
+数据库已经生成，一般无需重复下载。需要更新数据时，在项目根目录依次执行：
+
+```bash
+python Assignment1/data/download_and_ingest.py
+python Assignment1/data/clean_data.py
+python Assignment1/data/validate_data.py
+```
+
+生成的数据库为 `Assignment1/data/data.duckdb`。当前数据获取日为 2026-10-18，最新交易日为 2026-10-16。
+
+## 文档
+
+- [Assignment 1 后续任务说明](Assignment1/任务说明.md)
+- [数据说明](Assignment1/data/数据说明.md)
+- [数据质量报告](Assignment1/data/数据质量报告.md)
+- [技术栈说明](docs/技术栈说明.md)
+- [GitHub 协作说明](docs/GitHub协作说明.md)
+
+## 输出约定
+
+- 数据与模型结果从 DuckDB 或可复现的分析代码生成，不手工修改结果文件。
+- 所有图表使用 Plotly；交互结果输出为离线 HTML，报告静态图由 Plotly 导出。
+- 日期统一使用 `YYYY-MM-DD`，收益率和利率在计算中使用小数口径，展示时转换为百分比。
+- 同一资产在不同模块中使用一致的名称和颜色。

@@ -1,27 +1,17 @@
-# macOS and editor files
 .DS_Store
-.idea/
-.vscode/
-
-# Python
 __pycache__/
 *.py[cod]
-.pytest_cache/
-.ruff_cache/
-.mypy_cache/
+
 .venv/
-venv/
-
-# Jupyter
-.ipynb_checkpoints/
-
-# Secrets and local configuration
 .env
-*.local
+.env.*
+!.env.example
 
-# Generated data and reports
-*.duckdb
-*.db
-data/raw/
-data/interim/
-outputs/
+.ipynb_checkpoints/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+*.duckdb.wal
+*.duckdb.tmp
+*.log

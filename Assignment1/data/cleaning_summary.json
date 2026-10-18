@@ -1,0 +1,30 @@
+[
+  {
+    "table_name": "index_daily",
+    "rows_before": 13121,
+    "rows_after": 13121,
+    "invalid_rows_removed": 0,
+    "duplicate_rows_removed": 0
+  },
+  {
+    "table_name": "gov_yield_daily",
+    "rows_before": 8776,
+    "rows_after": 8776,
+    "invalid_rows_removed": 0,
+    "duplicate_rows_removed": 0
+  },
+  {
+    "table_name": "yield_curve_snapshot",
+    "rows_before": 8,
+    "rows_after": 8,
+    "invalid_rows_removed": 0,
+    "duplicate_rows_removed": 0
+  },
+  {
+    "table_name": "trading_calendar",
+    "rows_before": 2130,
+    "rows_after": 2130,
+    "invalid_rows_removed": 0,
+    "duplicate_rows_removed": 0
+  }
+]

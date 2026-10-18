@@ -1,0 +1,839 @@
+{
+  "generated_at": "2026-10-18T15:15:12.234456+08:00",
+  "database": "Assignment1/data/data.duckdb",
+  "checks": [
+    {
+      "name": "required_tables",
+      "status": "PASS",
+      "detail": "All required tables exist."
+    },
+    {
+      "name": "index_primary_key",
+      "status": "PASS",
+      "detail": "Duplicate asset-date keys: 0."
+    },
+    {
+      "name": "valid_index_values",
+      "status": "PASS",
+      "detail": "Invalid index rows: 0."
+    },
+    {
+      "name": "valid_yield_values",
+      "status": "PASS",
+      "detail": "Invalid yield rows: 0."
+    },
+    {
+      "name": "required_assets",
+      "status": "PASS",
+      "detail": "All core assets contain observations."
+    },
+    {
+      "name": "core_period_coverage",
+      "status": "PASS",
+      "detail": "Core assets cover the analysis start date."
+    },
+    {
+      "name": "supplemental_period_coverage",
+      "status": "WARN",
+      "detail": "STAR50 starts 2020-01-02 00:00:00; policy-bond proxy starts 2023-05-17 00:00:00."
+    },
+    {
+      "name": "ten_year_yield",
+      "status": "PASS",
+      "detail": "10-year yield observations: 2194."
+    },
+    {
+      "name": "yield_curve_points",
+      "status": "PASS",
+      "detail": "Latest yield-curve points: 8."
+    },
+    {
+      "name": "trading_calendar",
+      "status": "PASS",
+      "detail": "CSI300 dates absent from the calendar: 0."
+    },
+    {
+      "name": "stock_bond_common_days",
+      "status": "PASS",
+      "detail": "CSI300/SSE_TREASURY common days: 1887."
+    },
+    {
+      "name": "annual_trading_days",
+      "status": "PASS",
+      "detail": "Core-asset full-year counts are within [230, 250]."
+    },
+    {
+      "name": "expected_event_anomalies",
+      "status": "PASS",
+      "detail": "2024-09-30 and 2024-10-08 are both identified."
+    }
+  ],
+  "asset_summary": [
+    {
+      "asset_id": "CSI300",
+      "row_count": 2130,
+      "start_date": "2018-01-02T00:00:00",
+      "end_date": "2026-10-16T00:00:00"
+    },
+    {
+      "asset_id": "CSI500",
+      "row_count": 2130,
+      "start_date": "2018-01-02T00:00:00",
+      "end_date": "2026-10-16T00:00:00"
+    },
+    {
+      "asset_id": "POLICY_BOND_7_10_PROXY",
+      "row_count": 828,
+      "start_date": "2023-05-17T00:00:00",
+      "end_date": "2026-10-16T00:00:00"
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "row_count": 2130,
+      "start_date": "2018-01-02T00:00:00",
+      "end_date": "2026-10-16T00:00:00"
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "row_count": 2130,
+      "start_date": "2018-01-02T00:00:00",
+      "end_date": "2026-10-16T00:00:00"
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "row_count": 2130,
+      "start_date": "2018-01-02T00:00:00",
+      "end_date": "2026-10-16T00:00:00"
+    },
+    {
+      "asset_id": "STAR50",
+      "row_count": 1643,
+      "start_date": "2020-01-02T00:00:00",
+      "end_date": "2026-10-16T00:00:00"
+    }
+  ],
+  "yearly_counts": [
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2018,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2019,
+      "trading_days": 244
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2020,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2021,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2022,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2023,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2024,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2025,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI300",
+      "calendar_year": 2026,
+      "trading_days": 188
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2018,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2019,
+      "trading_days": 244
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2020,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2021,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2022,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2023,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2024,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2025,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "CSI500",
+      "calendar_year": 2026,
+      "trading_days": 188
+    },
+    {
+      "asset_id": "POLICY_BOND_7_10_PROXY",
+      "calendar_year": 2023,
+      "trading_days": 155
+    },
+    {
+      "asset_id": "POLICY_BOND_7_10_PROXY",
+      "calendar_year": 2024,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "POLICY_BOND_7_10_PROXY",
+      "calendar_year": 2025,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "POLICY_BOND_7_10_PROXY",
+      "calendar_year": 2026,
+      "trading_days": 188
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2018,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2019,
+      "trading_days": 244
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2020,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2021,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2022,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2023,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2024,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2025,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "calendar_year": 2026,
+      "trading_days": 188
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2018,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2019,
+      "trading_days": 244
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2020,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2021,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2022,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2023,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2024,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2025,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_ENTERPRISE_BOND",
+      "calendar_year": 2026,
+      "trading_days": 188
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2018,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2019,
+      "trading_days": 244
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2020,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2021,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2022,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2023,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2024,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2025,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "SSE_TREASURY",
+      "calendar_year": 2026,
+      "trading_days": 188
+    },
+    {
+      "asset_id": "STAR50",
+      "calendar_year": 2020,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "STAR50",
+      "calendar_year": 2021,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "STAR50",
+      "calendar_year": 2022,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "STAR50",
+      "calendar_year": 2023,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "STAR50",
+      "calendar_year": 2024,
+      "trading_days": 242
+    },
+    {
+      "asset_id": "STAR50",
+      "calendar_year": 2025,
+      "trading_days": 243
+    },
+    {
+      "asset_id": "STAR50",
+      "calendar_year": 2026,
+      "trading_days": 188
+    }
+  ],
+  "equity_return_anomalies": [
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2018-03-23T00:00:00",
+      "simple_return": -0.051477350375588316
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2018-06-19T00:00:00",
+      "simple_return": -0.062406727712755794
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2018-10-11T00:00:00",
+      "simple_return": -0.06964900007278785
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2018-10-11T00:00:00",
+      "simple_return": -0.052233149756625075
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2019-02-25T00:00:00",
+      "simple_return": 0.05947669936064659
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2019-02-25T00:00:00",
+      "simple_return": 0.05589960180411646
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2019-02-25T00:00:00",
+      "simple_return": 0.05600725476477275
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2019-05-06T00:00:00",
+      "simple_return": -0.05841622135887892
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2019-05-06T00:00:00",
+      "simple_return": -0.07513094529312914
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2019-05-06T00:00:00",
+      "simple_return": -0.05583337502249597
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-01-17T00:00:00",
+      "simple_return": 0.0730839303025288
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2020-02-03T00:00:00",
+      "simple_return": -0.07880914138486439
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2020-02-03T00:00:00",
+      "simple_return": -0.08680968458689253
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2020-02-03T00:00:00",
+      "simple_return": -0.07724536775733326
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-02-03T00:00:00",
+      "simple_return": -0.14271001961564
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-02-04T00:00:00",
+      "simple_return": 0.11904517005482518
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-02-07T00:00:00",
+      "simple_return": 0.055700997047847256
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-02-12T00:00:00",
+      "simple_return": 0.050741212803021574
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-02-26T00:00:00",
+      "simple_return": -0.05786737732636715
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2020-02-28T00:00:00",
+      "simple_return": -0.052563842531979765
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-02-28T00:00:00",
+      "simple_return": -0.05841062942856623
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-03-02T00:00:00",
+      "simple_return": 0.05169282694753807
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-03-09T00:00:00",
+      "simple_return": -0.05751612750156243
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-03-16T00:00:00",
+      "simple_return": -0.05122004761410437
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-03-23T00:00:00",
+      "simple_return": -0.07760103391170048
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-04-02T00:00:00",
+      "simple_return": 0.054819847638610586
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-04-30T00:00:00",
+      "simple_return": 0.05772205989309853
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-05-06T00:00:00",
+      "simple_return": 0.0695890077404
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-05-19T00:00:00",
+      "simple_return": 0.05590293861352036
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2020-07-06T00:00:00",
+      "simple_return": 0.056679259448064734
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2020-07-06T00:00:00",
+      "simple_return": 0.057113480198601074
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-07-06T00:00:00",
+      "simple_return": 0.06938554204304914
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-07-15T00:00:00",
+      "simple_return": -0.05262628975489292
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-07-16T00:00:00",
+      "simple_return": -0.0882344365972203
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2020-07-24T00:00:00",
+      "simple_return": -0.050770156925002974
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-07-24T00:00:00",
+      "simple_return": -0.07016348545884943
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-07-29T00:00:00",
+      "simple_return": 0.054543442327396274
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2020-08-03T00:00:00",
+      "simple_return": 0.07259594825301385
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2022-03-15T00:00:00",
+      "simple_return": -0.056707864704252264
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2022-04-25T00:00:00",
+      "simple_return": -0.06466962355793904
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2022-04-25T00:00:00",
+      "simple_return": -0.05131572438579779
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2022-04-25T00:00:00",
+      "simple_return": -0.06131610317290981
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2024-02-06T00:00:00",
+      "simple_return": 0.07749268625048722
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2024-02-06T00:00:00",
+      "simple_return": 0.06502283563807532
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2024-02-07T00:00:00",
+      "simple_return": 0.06318631637316385
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2024-09-27T00:00:00",
+      "simple_return": 0.05335599186575468
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2024-09-27T00:00:00",
+      "simple_return": 0.06761461099994359
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2024-09-30T00:00:00",
+      "simple_return": 0.08482622266273232
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2024-09-30T00:00:00",
+      "simple_return": 0.10411115239703217
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2024-09-30T00:00:00",
+      "simple_return": 0.08063692106366238
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2024-09-30T00:00:00",
+      "simple_return": 0.1788461330565827
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2024-10-08T00:00:00",
+      "simple_return": 0.05929575100342732
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2024-10-08T00:00:00",
+      "simple_return": 0.07180029937925037
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2024-10-08T00:00:00",
+      "simple_return": 0.17378276294899497
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2024-10-09T00:00:00",
+      "simple_return": -0.07051351423870533
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2024-10-09T00:00:00",
+      "simple_return": -0.06822112360233967
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2024-10-09T00:00:00",
+      "simple_return": -0.06616967953035124
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2024-10-11T00:00:00",
+      "simple_return": -0.05792771114641804
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2024-10-18T00:00:00",
+      "simple_return": 0.1132583927125137
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2025-02-21T00:00:00",
+      "simple_return": 0.059713382732301756
+    },
+    {
+      "asset_id": "CSI300",
+      "trade_date": "2025-04-07T00:00:00",
+      "simple_return": -0.07045514967046262
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2025-04-07T00:00:00",
+      "simple_return": -0.09553858011742189
+    },
+    {
+      "asset_id": "SSE_COMPOSITE",
+      "trade_date": "2025-04-07T00:00:00",
+      "simple_return": -0.07343834067168675
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2025-04-07T00:00:00",
+      "simple_return": -0.09223218004227596
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2025-08-22T00:00:00",
+      "simple_return": 0.08589906809461945
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2025-08-28T00:00:00",
+      "simple_return": 0.0723339483684804
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2025-09-04T00:00:00",
+      "simple_return": -0.06084598374715566
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2025-09-11T00:00:00",
+      "simple_return": 0.053162745334748074
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2025-10-10T00:00:00",
+      "simple_return": -0.05614129470768592
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-03-03T00:00:00",
+      "simple_return": -0.05213234551179291
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-04-08T00:00:00",
+      "simple_return": 0.06175280510826009
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-04-30T00:00:00",
+      "simple_return": 0.05193153019239971
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-05-06T00:00:00",
+      "simple_return": 0.05466419276096146
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-05-25T00:00:00",
+      "simple_return": 0.058782502061961006
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-05-29T00:00:00",
+      "simple_return": -0.050386905455825026
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-06-01T00:00:00",
+      "simple_return": -0.05003588715502516
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-06-15T00:00:00",
+      "simple_return": 0.051168786348897655
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-07-02T00:00:00",
+      "simple_return": -0.07698499286823357
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-07-09T00:00:00",
+      "simple_return": 0.08411329444563198
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-07-10T00:00:00",
+      "simple_return": -0.05528759164159969
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2026-07-17T00:00:00",
+      "simple_return": -0.05554543627945041
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-07-17T00:00:00",
+      "simple_return": -0.0711866572597959
+    },
+    {
+      "asset_id": "CSI500",
+      "trade_date": "2026-07-21T00:00:00",
+      "simple_return": 0.052527140466088085
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-07-21T00:00:00",
+      "simple_return": 0.10733232869220166
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-07-28T00:00:00",
+      "simple_return": -0.06331587526431859
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-07-30T00:00:00",
+      "simple_return": -0.05380410760940668
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-08-03T00:00:00",
+      "simple_return": -0.05077868556849108
+    },
+    {
+      "asset_id": "STAR50",
+      "trade_date": "2026-08-19T00:00:00",
+      "simple_return": -0.06888145117970323
+    }
+  ]
+}
