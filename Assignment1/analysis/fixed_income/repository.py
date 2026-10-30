@@ -7,7 +7,12 @@ from pathlib import Path
 import duckdb
 import pandas as pd
 
-from config import BOND_ASSETS, LATE_2024_END_DATE, LATE_2024_START_DATE
+from config import (
+    BOND_ASSETS,
+    LATE_2024_END_DATE,
+    LATE_2024_START_DATE,
+    FixedIncomeDataAudit,
+)
 
 
 class FixedIncomeRepository:
@@ -55,6 +60,97 @@ class FixedIncomeRepository:
                 "Latest yield curve contains missing tenor or yield values."
             )
         return curve
+
+    def load_data_audit(self) -> FixedIncomeDataAudit:
+        """Load source-table and series coverage for the HTML report.
+
+        Returns:
+            Row counts, date ranges, metadata, and yield-tenor coverage.
+        """
+        table_queries = {
+            "index_daily": "trade_date",
+            "gov_yield_daily": "trade_date",
+            "yield_curve_snapshot": "curve_date",
+            "trading_calendar": "trade_date",
+        }
+        table_rows: list[dict[str, object]] = []
+        asset_ids = tuple(BOND_ASSETS)
+        placeholders = ", ".join("?" for _ in asset_ids)
+
+        with duckdb.connect(str(self.database), read_only=True) as connection:
+            asset_count = connection.execute(
+                "SELECT COUNT(*) FROM assets"
+            ).fetchone()[0]
+            table_rows.append(
+                {
+                    "table_name": "assets",
+                    "n_rows": asset_count,
+                    "start_date": None,
+                    "end_date": None,
+                }
+            )
+            for table_name, date_column in table_queries.items():
+                summary = connection.execute(
+                    f"""
+                    SELECT
+                        COUNT(*) AS n_rows,
+                        MIN({date_column}) AS start_date,
+                        MAX({date_column}) AS end_date
+                    FROM {table_name}
+                    """
+                ).fetchone()
+                table_rows.append(
+                    {
+                        "table_name": table_name,
+                        "n_rows": summary[0],
+                        "start_date": summary[1],
+                        "end_date": summary[2],
+                    }
+                )
+
+            bond_assets = connection.execute(
+                f"""
+                SELECT
+                    assets.asset_id,
+                    assets.asset_name,
+                    assets.symbol,
+                    assets.source,
+                    assets.return_type,
+                    assets.tenor_bucket,
+                    COUNT(daily.trade_date) AS n_rows,
+                    MIN(daily.trade_date) AS start_date,
+                    MAX(daily.trade_date) AS end_date
+                FROM assets
+                INNER JOIN index_daily AS daily USING (asset_id)
+                WHERE assets.asset_id IN ({placeholders})
+                GROUP BY ALL
+                """,
+                list(asset_ids),
+            ).fetch_df()
+            bond_assets["asset_order"] = bond_assets["asset_id"].map(
+                {asset_id: index for index, asset_id in enumerate(asset_ids)}
+            )
+            bond_assets = bond_assets.sort_values("asset_order").drop(
+                columns="asset_order"
+            )
+            yield_tenors = connection.execute(
+                """
+                SELECT
+                    tenor_years,
+                    COUNT(*) AS n_rows,
+                    MIN(trade_date) AS start_date,
+                    MAX(trade_date) AS end_date
+                FROM gov_yield_daily
+                GROUP BY tenor_years
+                ORDER BY tenor_years
+                """
+            ).fetch_df()
+
+        return FixedIncomeDataAudit(
+            source_tables=pd.DataFrame(table_rows),
+            bond_assets=bond_assets,
+            yield_tenors=yield_tenors,
+        )
 
     def load_regression_sample(
         self,
@@ -108,81 +204,6 @@ class FixedIncomeRepository:
         """
         with duckdb.connect(str(self.database), read_only=True) as connection:
             return connection.execute(query, [asset_id, start_date]).fetch_df()
-
-    def load_bond_returns(
-        self,
-        asset_id: str,
-        start_date: str,
-    ) -> pd.DataFrame:
-        """Load one bond asset's daily log returns.
-
-        Args:
-            asset_id: Bond asset identifier in ``index_daily``.
-            start_date: Inclusive analysis start in ``YYYY-MM-DD`` format.
-
-        Returns:
-            Trade dates and daily log returns.
-
-        Raises:
-            ValueError: If ``asset_id`` is not configured for Module 3.
-        """
-        if asset_id not in BOND_ASSETS:
-            raise ValueError(f"Unknown bond 'asset_id': {asset_id!r}.")
-        query = """
-            WITH returns AS (
-                SELECT
-                    trade_date,
-                    LN(close / LAG(close) OVER (ORDER BY trade_date))
-                        AS bond_log_return
-                FROM index_daily
-                WHERE asset_id = ?
-            )
-            SELECT trade_date, bond_log_return
-            FROM returns
-            WHERE trade_date >= ? AND bond_log_return IS NOT NULL
-            ORDER BY trade_date
-        """
-        with duckdb.connect(str(self.database), read_only=True) as connection:
-            return connection.execute(query, [asset_id, start_date]).fetch_df()
-
-    def load_yield_change_panel(self, start_date: str) -> pd.DataFrame:
-        """Load aligned daily changes for 2-, 5-, 10-, and 30-year yields.
-
-        Args:
-            start_date: Inclusive analysis start in ``YYYY-MM-DD`` format.
-
-        Returns:
-            One row per date with four decimal yield-change columns.
-        """
-        query = """
-            WITH changes AS (
-                SELECT
-                    trade_date,
-                    tenor_years,
-                    yield_decimal - LAG(yield_decimal) OVER (
-                        PARTITION BY tenor_years ORDER BY trade_date
-                    ) AS yield_change
-                FROM gov_yield_daily
-                WHERE tenor_years IN (2.0, 5.0, 10.0, 30.0)
-            )
-            SELECT
-                trade_date,
-                MAX(CASE WHEN tenor_years = 2.0 THEN yield_change END)
-                    AS yield_change_2y,
-                MAX(CASE WHEN tenor_years = 5.0 THEN yield_change END)
-                    AS yield_change_5y,
-                MAX(CASE WHEN tenor_years = 10.0 THEN yield_change END)
-                    AS yield_change_10y,
-                MAX(CASE WHEN tenor_years = 30.0 THEN yield_change END)
-                    AS yield_change_30y
-            FROM changes
-            WHERE trade_date >= ?
-            GROUP BY trade_date
-            HAVING COUNT(yield_change) = 4
-            ORDER BY trade_date
-        """
-        with duckdb.connect(str(self.database), read_only=True) as connection:
-            return connection.execute(query, [start_date]).fetch_df()
 
     def load_late_2024_period(self) -> pd.DataFrame:
         """Load 10-year yields and cumulative bond returns for late 2024.

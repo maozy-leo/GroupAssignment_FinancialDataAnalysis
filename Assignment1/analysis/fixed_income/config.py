@@ -35,7 +35,6 @@ SCENARIOS: Final[dict[str, str]] = {
     "parallel_100bp": "平行上移100bp",
     "steepening": "陡峭化",
 }
-YIELD_TENORS: Final[tuple[float, ...]] = (2.0, 5.0, 10.0, 30.0)
 ROLLING_REGRESSION_WINDOW: Final = 252
 
 
@@ -84,22 +83,18 @@ class NelsonSiegelFit:
 
 
 @dataclass(frozen=True)
-class YieldPcaResults:
-    """Store yield PCA and key-rate sensitivity outputs.
+class FixedIncomeDataAudit:
+    """Store reproducible source-data coverage summaries.
 
     Args:
-        scores: Daily level, slope, and curvature factor scores.
-        explained_variance: Variance share explained by each factor.
-        loadings: Factor loadings at the four historical tenors.
-        regressions: Per-asset factor regression statistics.
-        key_rate_durations: Factor-implied sensitivities by asset and tenor.
+        source_tables: Row counts and date coverage for input DuckDB tables.
+        bond_assets: Metadata and date coverage for the three bond assets.
+        yield_tenors: Row counts and date coverage by historical yield tenor.
     """
 
-    scores: pd.DataFrame
-    explained_variance: pd.DataFrame
-    loadings: pd.DataFrame
-    regressions: pd.DataFrame
-    key_rate_durations: pd.DataFrame
+    source_tables: pd.DataFrame
+    bond_assets: pd.DataFrame
+    yield_tenors: pd.DataFrame
 
 
 @dataclass(frozen=True)
@@ -108,6 +103,7 @@ class AnalysisResults:
 
     Args:
         curve: Latest observed government yield curve.
+        data_audit: Source-table, bond-asset, and yield-tenor coverage.
         curve_fit: Selected Nelson–Siegel fit and diagnostics.
         curve_results: Pointwise fitted yields and residuals.
         duration_convexity: Zero-coupon price and risk metrics.
@@ -117,12 +113,10 @@ class AnalysisResults:
         late_period: Aligned late-2024 rate and bond-index series.
         realized_convexity: Late-2024 constant-maturity attribution.
         rolling_duration: Rolling implied rate durations.
-        yield_pca: Yield PCA and key-rate sensitivity results.
-        liability_strategies: Five-year liability-matching strategies.
-        liability_stress: Strategy surplus changes under ±100bp shocks.
     """
 
     curve: pd.DataFrame
+    data_audit: FixedIncomeDataAudit
     curve_fit: NelsonSiegelFit
     curve_results: pd.DataFrame
     duration_convexity: pd.DataFrame
@@ -132,6 +126,3 @@ class AnalysisResults:
     late_period: pd.DataFrame
     realized_convexity: pd.DataFrame
     rolling_duration: pd.DataFrame
-    yield_pca: YieldPcaResults
-    liability_strategies: pd.DataFrame
-    liability_stress: pd.DataFrame

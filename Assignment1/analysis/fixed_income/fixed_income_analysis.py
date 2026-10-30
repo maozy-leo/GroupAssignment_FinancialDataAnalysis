@@ -7,20 +7,16 @@ import plotly.graph_objects as go
 from charts import (
     create_curve_figure,
     create_late_2024_figure,
-    create_liability_matching_figure,
     create_realized_convexity_figure,
     create_regression_figure,
     create_rolling_duration_figure,
     create_stress_figure,
-    create_yield_pca_figure,
     export_static_figures,
-    write_combined_html,
 )
 from config import AnalysisPaths, AnalysisResults
 from curve import (
     build_curve_results,
     build_duration_convexity,
-    build_liability_matching_analysis,
     build_realized_2024_convexity_attribution,
     build_stress_results,
     fit_nelson_siegel,
@@ -28,9 +24,9 @@ from curve import (
 from market import (
     calculate_rolling_rate_duration,
     run_rate_sensitivity_regressions,
-    run_yield_pca,
 )
-from outputs import write_report, write_result_tables
+from html_report import write_html_report
+from outputs import write_result_tables
 from repository import FixedIncomeRepository
 
 
@@ -45,6 +41,7 @@ def run_calculations(paths: AnalysisPaths) -> AnalysisResults:
     """
     repository = FixedIncomeRepository(paths.database)
     curve = repository.load_curve_snapshot()
+    data_audit = repository.load_data_audit()
     curve_fit = fit_nelson_siegel(curve)
     curve_results = build_curve_results(curve, curve_fit)
     duration_convexity = build_duration_convexity(curve_fit)
@@ -53,14 +50,11 @@ def run_calculations(paths: AnalysisPaths) -> AnalysisResults:
         repository
     )
     rolling_duration = calculate_rolling_rate_duration(regression_data)
-    yield_pca = run_yield_pca(repository)
     late_period = repository.load_late_2024_period()
     realized_convexity = build_realized_2024_convexity_attribution(late_period)
-    liability_strategies, liability_stress = build_liability_matching_analysis(
-        duration_convexity
-    )
     return AnalysisResults(
         curve=curve,
+        data_audit=data_audit,
         curve_fit=curve_fit,
         curve_results=curve_results,
         duration_convexity=duration_convexity,
@@ -70,9 +64,6 @@ def run_calculations(paths: AnalysisPaths) -> AnalysisResults:
         late_period=late_period,
         realized_convexity=realized_convexity,
         rolling_duration=rolling_duration,
-        yield_pca=yield_pca,
-        liability_strategies=liability_strategies,
-        liability_stress=liability_stress,
     )
 
 
@@ -107,24 +98,19 @@ def build_figures(results: AnalysisResults) -> dict[str, go.Figure]:
         "module3_rolling_rate_duration": create_rolling_duration_figure(
             results.rolling_duration
         ),
-        "module3_yield_pca": create_yield_pca_figure(results.yield_pca),
-        "module3_liability_matching": create_liability_matching_figure(
-            results.liability_strategies,
-            results.liability_stress,
-        ),
     }
 
 
 def main() -> None:
-    """Run Module 3 and write tables, one HTML dashboard, SVGs, and report."""
+    """Run Module 3 and write tables, one HTML report, and SVG figures."""
     paths = AnalysisPaths.from_script()
     results = run_calculations(paths)
     figures = build_figures(results)
 
     write_result_tables(results, paths.output)
-    write_report(results, paths.output / "fixed_income_report.md")
-    write_combined_html(
+    write_html_report(
         figures,
+        results,
         paths.output / "module3_fixed_income_dashboard.html",
     )
     export_static_figures(figures, paths.figures)
