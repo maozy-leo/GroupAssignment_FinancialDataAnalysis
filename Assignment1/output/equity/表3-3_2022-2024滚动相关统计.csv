@@ -1,0 +1,3 @@
+﻿pair_id,pair_label,role,period_start,period_end,rolling_observations,first_rolling_date,last_rolling_date,mean_correlation,minimum_correlation,minimum_date,maximum_correlation,maximum_date,negative_share,weakly_negative_share,strongly_negative_share
+CSI300__SSE_TREASURY,沪深300—上证国债指数,主结果,2022-01-01,2024-12-31,726,2022-01-04,2024-12-31,-0.12505295115071977,-0.5236112660641802,2024-09-30,0.21447574238615116,2022-02-23,0.7300275482093664,0.10330578512396695,0.6267217630853994
+CSI300__SSE_ENTERPRISE_BOND,沪深300—上证企债指数,补充结果,2022-01-01,2024-12-31,726,2022-01-04,2024-12-31,0.10563095758994193,-0.15094792775084895,2022-10-20,0.3354180359280247,2023-05-29,0.14325068870523416,0.1115702479338843,0.03168044077134986
