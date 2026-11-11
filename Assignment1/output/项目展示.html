@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>中国股债配置研究｜第一次小组作业</title>
+  <style>
+    :root {
+      --navy: #142b3e;
+      --navy-light: #28475c;
+      --teal: #398e88;
+      --teal-soft: #e0f0ed;
+      --paper: #f5f7f8;
+      --white: #fff;
+      --ink: #1b3041;
+      --muted: #5f7381;
+      --line: #dbe4e8;
+      --shadow: 0 14px 36px rgba(21, 48, 65, .08);
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 16px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+    a { color: #147c78; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .wrap { width: min(1200px, calc(100% - 48px)); margin-inline: auto; }
+    .hero {
+      color: var(--white);
+      background: linear-gradient(125deg, #142b3e 10%, #1f4660 70%, #327875);
+      padding: 92px 0 86px;
+    }
+    .eyebrow { margin: 0 0 18px; color: #93d8d2; font-size: 14px; font-weight: 800; letter-spacing: .14em; }
+    h1 { margin: 0 0 24px; font-size: clamp(42px, 5.8vw, 76px); line-height: 1.12; letter-spacing: -.035em; }
+    .hero-lead { max-width: 850px; margin: 0 0 36px; color: #dceaf2; font-size: clamp(20px, 2.2vw, 28px); }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 12px; }
+    .hero-meta span { padding: 8px 14px; border: 1px solid #ffffff50; border-radius: 20px; color: #dceaf2; font-size: 14px; }
+    .topbar { position: sticky; top: 0; z-index: 10; background: rgba(255, 255, 255, .95); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
+    .nav { display: flex; align-items: center; gap: 22px; overflow-x: auto; white-space: nowrap; padding: 12px 0; font-size: 14px; font-weight: 700; }
+    .nav a { color: var(--navy-light); }
+    .nav a:first-child { color: var(--teal); }
+    main { padding-bottom: 86px; }
+    section { scroll-margin-top: 85px; padding-top: 74px; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 28px; margin-bottom: 25px; }
+    .section-no { display: block; margin-bottom: 8px; color: var(--teal); font-size: 14px; font-weight: 800; letter-spacing: .12em; }
+    h2 { margin: 0; font-size: clamp(30px, 3.4vw, 46px); line-height: 1.2; letter-spacing: -.025em; }
+    h3 { margin: 0 0 9px; font-size: 21px; line-height: 1.35; }
+    p { margin: 0 0 15px; }
+    .section-intro { max-width: 790px; color: var(--muted); font-size: 18px; }
+    .card { padding: 28px 32px; border: 1px solid var(--line); border-radius: 13px; background: var(--white); box-shadow: var(--shadow); }
+    .grid { display: grid; gap: 18px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid.four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .metric { color: var(--teal); font-size: clamp(31px, 3.6vw, 48px); font-weight: 800; line-height: 1.15; font-variant-numeric: tabular-nums; }
+    .metric-label { margin: 7px 0 4px; font-weight: 800; }
+    .small { color: var(--muted); font-size: 14px; }
+    .callout { margin: 24px 0; padding: 19px 24px; border-left: 5px solid var(--teal); border-radius: 0 9px 9px 0; background: var(--teal-soft); font-weight: 650; }
+    .chart-block { margin: 30px 0 38px; }
+    .chart-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 18px; margin: 0 0 12px; }
+    .chart-heading h3 { margin: 0; }
+    .chart-shell { height: 550px; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--white); box-shadow: var(--shadow); }
+    .chart-shell.tall { height: 620px; }
+    .chart-shell.event { height: 720px; }
+    .chart-shell iframe { display: block; width: 100%; height: 100%; border: 0; background: white; }
+    .caption { margin: 11px 2px 0; color: var(--muted); font-size: 14px; }
+    .note-list { margin: 0; padding-left: 1.25em; }
+    .note-list li { margin: 8px 0; }
+    .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0; }
+    .flow-item { position: relative; padding: 19px; border-radius: 10px; background: #e8eef1; }
+    .flow-item strong { display: block; color: var(--navy); }
+    .flow-item span { color: var(--muted); font-size: 14px; }
+    .flow-item:not(:last-child)::after { content: "→"; position: absolute; right: -12px; top: 20px; z-index: 1; color: var(--teal); font-size: 22px; font-weight: 800; }
+    table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+    th, td { padding: 13px 12px; border-bottom: 1px solid var(--line); text-align: right; }
+    th:first-child, td:first-child { text-align: left; }
+    th { color: var(--muted); font-size: 14px; }
+    td { font-size: 15px; }
+    tr.highlight { color: #167d75; background: var(--teal-soft); font-weight: 800; }
+    .table-wrap { overflow-x: auto; }
+    .table-wrap table { min-width: 680px; }
+    .strategy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+    .strategy-grid .card { padding: 23px 26px; }
+    .strategy-grid .card p { margin: 0; color: var(--muted); font-size: 15px; }
+    .tag { display: inline-block; margin-bottom: 12px; padding: 3px 9px; border-radius: 4px; background: var(--teal-soft); color: #167d75; font-size: 12px; font-weight: 800; }
+    .conclusion { color: white; background: var(--navy); }
+    .conclusion .card { color: var(--ink); }
+    .conclusion h2 { color: white; }
+    .conclusion .section-intro { color: #bdd2df; }
+    .conclusion section { padding-bottom: 65px; }
+    footer { padding: 35px 0 50px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+    @media (max-width: 800px) {
+      .wrap { width: min(100% - 28px, 1200px); }
+      .hero { padding: 66px 0; }
+      section { padding-top: 56px; }
+      .grid.three, .grid.four, .grid.two, .strategy-grid { grid-template-columns: 1fr; }
+      .flow { grid-template-columns: 1fr 1fr; }
+      .flow-item::after { display: none; }
+      .section-head, .chart-heading { display: block; }
+      .chart-shell, .chart-shell.tall { height: 460px; }
+      .chart-shell.event { height: 620px; }
+      .card { padding: 22px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero" id="top">
+    <div class="wrap">
+      <p class="eyebrow">金融数据分析导论 · 第一次小组作业 · 第12组</p>
+      <h1>中国股债配置研究</h1>
+      <p class="hero-lead">面向 5 年后到期、目标稳健增值的资金，开展数据整理、权益与固定收益分析，并比较股债配置策略的历史表现。</p>
+      <div class="hero-meta"><span>正式样本：2019-01—2026-10</span><span>核心资产：沪深 300 + 上证国债指数</span><span>七类策略 · 月末信号 · 10bp 成本</span></div>
+    </div>
+  </header>
+  <div class="topbar"><nav class="nav wrap" aria-label="章节导航">
+    <a href="#top">首页</a><a href="#overview">研究框架</a><a href="#data">数据工程</a><a href="#equity">权益分析</a><a href="#bond">固定收益</a><a href="#allocation">配置回测</a><a href="#robustness">稳健性</a><a href="#conclusion">结论与不足</a>
+  </nav></div>
+  <main class="wrap">
+    <section id="overview">
+      <div class="section-head"><div><span class="section-no">01 · 研究框架</span><h2>研究目标与分析方法</h2></div></div>
+      <p class="section-intro">研究问题是：在中国市场中，如何为五年期稳健增值资金确定股债比例，并认识到历史绩效背后的利率、权益尾部和交易风险。</p>
+      <div class="flow">
+        <div class="flow-item"><strong>数据工程</strong><span>课程接口、清洗、DuckDB、质量校验</span></div>
+        <div class="flow-item"><strong>权益研究</strong><span>厚尾、滚动波动、股债相关、脉冲行情</span></div>
+        <div class="flow-item"><strong>固收研究</strong><span>收益率曲线、久期凸性、利率敏感度</span></div>
+        <div class="flow-item"><strong>配置回测</strong><span>七类策略、成本、稳健性与局限</span></div>
+      </div>
+      <div class="grid three">
+        <div class="card"><div class="metric">6.17%</div><div class="metric-label">目标日期策略年化收益</div><p class="small">样本内七类策略最高；最大回撤 17.43%。</p></div>
+        <div class="card"><div class="metric">−0.163</div><div class="metric-label">全样本股债相关</div><p class="small">负相关常见，但 120 日滚动相关在样本末端转正。</p></div>
+        <div class="card"><div class="metric">0.877bp</div><div class="metric-label">NS 曲线拟合 RMSE</div><p class="small">2026-10-16 的八个国债期限点。</p></div>
+      </div>
+    </section>
+
+    <section id="data">
+      <div class="section-head"><div><span class="section-no">02 · 模块一</span><h2>数据来源、清洗与校验</h2></div></div>
+      <p class="section-intro">数据通过课程统一接口获取，按资产、日期、价格和收益率口径清洗后进入 DuckDB。各分析模块只读查询同一份数据库快照，跨资产计算采用共同交易日。</p>
+      <div class="grid four">
+        <div class="card"><div class="metric">7</div><div class="metric-label">市场资产</div><p class="small">四个权益指数、两个债券指数和一个政金债 ETF 代理。</p></div>
+        <div class="card"><div class="metric">13,121</div><div class="metric-label">市场日线</div><p class="small">指数点位或 ETF 前复权价格。</p></div>
+        <div class="card"><div class="metric">8,776</div><div class="metric-label">国债历史收益率</div><p class="small">2、5、10、30 年期序列。</p></div>
+        <div class="card"><div class="metric">1,887</div><div class="metric-label">核心共同交易日</div><p class="small">2019-01-02 至 2026-10-16。</p></div>
+      </div>
+      <div class="grid two" style="margin-top:18px">
+        <div class="card"><h3>数据质量检查</h3><p>日期统一为交易日字段，收益率在计算中使用小数；检查缺失值、重复主键、非法价格与收益率范围。13 项自动检查中 12 项通过，1 项警告是科创 50 与政金债 ETF 起点较晚。</p><p class="small">2024 年权益大幅波动经相邻价格与公开行情核验后保留。</p></div>
+        <div class="card"><h3>分析区间与复现方式</h3><p>2018 年数据用于 60、120、252 日滚动窗口预热；正式分析从 2019 年开始。日收益为对数收益，年化按 252 个交易日换算；债券指数点位与可交易的全收益产品并不等同。</p><p class="small">仓库内保留 DuckDB 快照，可不依赖实时接口重新生成分析结果。</p></div>
+      </div>
+    </section>
+
+    <section id="equity">
+      <div class="section-head"><div><span class="section-no">03 · 模块二</span><h2>权益风险与股债关系</h2></div></div>
+      <p class="section-intro">权益部分不仅比较平均收益，也检查分布形态、风险随时间变化的程度，以及债券能否在股市冲击中提供稳定缓冲。下方图表均可悬停、缩放和重置坐标。</p>
+      <div class="grid three">
+        <div class="card"><div class="metric">33.81%</div><div class="metric-label">科创 50 年化波动</div><p class="small">四个权益指数中最高；沪深 300 为 18.94%。</p></div>
+        <div class="card"><div class="metric">4/4</div><div class="metric-label">拒绝正态性</div><p class="small">Jarque–Bera 检验均在 1% 水平拒绝正态假设。</p></div>
+        <div class="card"><div class="metric">68.2%</div><div class="metric-label">滚动股债负相关占比</div><p class="small">120 日相关为负的日数比例，方向并非固定。</p></div>
+      </div>
+      <div class="chart-block"><div class="chart-heading"><h3>权益指数收益分布与正态性检验</h3><span class="small">图 1-1 · 四个主要权益指数</span></div><div class="chart-shell tall"><iframe title="权益指数收益分布交互图" loading="lazy" data-plotly src="equity/图1-1_权益指数对数收益分布直方图.html"></iframe></div><p class="caption">实际经验分布与正态曲线对照。厚尾意味着仅依赖均值和方差的风险评估不够充分。</p></div>
+      <div class="chart-block"><div class="chart-heading"><h3>60 日滚动年化波动率</h3><span class="small">图 2-1 · 动态风险</span></div><div class="chart-shell"><iframe title="权益指数滚动波动交互图" loading="lazy" data-plotly src="equity/图2-1_60日滚动年化波动率.html"></iframe></div><p class="caption">不同指数的波动峰值和恢复速度不同，固定波动假设无法完整覆盖压力阶段。</p></div>
+      <div class="chart-block"><div class="chart-heading"><h3>权益指数间的 120 日滚动相关系数</h3><span class="small">图 2-2 · 120 日滚动相关</span></div><div class="chart-shell"><iframe title="权益指数间滚动相关交互图" loading="lazy" data-plotly src="equity/图2-2_指数间120日滚动相关系数.html"></iframe></div><p class="caption">沪深 300 与上证综指的大盘风险敞口高度一致；与科创 50 的相关性最低曾到 0.474，但市场共振时期又明显上升。权益内部的风格分散在系统性冲击中作用有限。</p></div>
+      <div class="chart-block"><div class="chart-heading"><h3>沪深 300 与债券指数的滚动相关系数</h3><span class="small">图 3-1 · 沪深 300 与债券指数</span></div><div class="chart-shell"><iframe title="股债滚动相关交互图" loading="lazy" data-plotly src="equity/图3-1_股债120日滚动相关.html"></iframe></div><p class="caption">沪深 300 与上证国债指数全样本相关 −0.163；2022—2024 年滚动均值 −0.125、负相关比例 73.0%，但样本末端为 +0.077。</p></div>
+      <div class="grid two"><div class="card"><h3>年度结果与相关性变化</h3><p>2022—2024 年股债关系整体呈负相关，但强度差异明显；120 日滚动相关在该区间最高达到 +0.214。配置模型需要允许相关性随市场状态变化。</p><p><a href="equity/图3-2_分年度股债相关.html">打开年度相关交互图 ↗</a></p></div><div class="card"><h3>2024 年脉冲行情</h3><p>2024-09-20 至 10-08，沪深 300 上涨 32.96%，上证国债指数下跌 0.57%，60/40 上涨 19.55%，年化波动折算达到 26.95%。债券在这段行情没有提供方向相反的收益。</p></div></div>
+      <div class="chart-block" id="event-chart"><div class="chart-heading"><h3>2024 年脉冲行情的净值与单日收益</h3><span class="small">图 4-1 · 2024-09—10</span></div><div class="chart-shell event"><iframe title="2024脉冲行情交互图" loading="lazy" data-plotly src="equity/图4-1_2024脉冲行情_净值与单日收益.html"></iframe></div><p class="caption">60/40 的缓冲主要来自债券自身波动较低，不能把历史负相关当作必然的对冲。上图中的灰色区域标示国庆休市。</p></div>
+    </section>
+
+    <section id="bond">
+      <div class="section-head"><div><span class="section-no">04 · 模块三</span><h2>固定收益分析</h2></div></div>
+      <p class="section-intro">基于最新国债收益率曲线拟合、零息债久期和凸性、利率压力情景及历史债券指数回归，评估不同债券资产对利率变动的敏感度。</p>
+      <div class="grid three">
+        <div class="card"><div class="metric">0.877bp</div><div class="metric-label">NS 曲线拟合误差</div><p class="small">五组初值收敛于同一组参数，最大残差 1.923bp。</p></div>
+        <div class="card"><div class="metric">9.839</div><div class="metric-label">10 年零息债修正久期</div><p class="small">凸性 106.49，长端对利率冲击更敏感。</p></div>
+        <div class="card"><div class="metric">6.16 年</div><div class="metric-label">政金债 ETF 隐含久期</div><p class="small">上证国债指数约 0.91 年；企债的单因子利率系数不显著。</p></div>
+      </div>
+      <div class="chart-block"><div class="chart-heading"><h3>国债收益率曲线拟合</h3><span class="small">2026-10-16 · 8 个期限点</span></div><div class="chart-shell"><iframe title="国债收益率曲线交互图" loading="lazy" data-plotly src="fixed_income/module3_nelson_siegel_curve.html"></iframe></div><p class="caption">Nelson–Siegel 模型的五组初值收敛至同一组参数，拟合 RMSE 为 0.877bp。曲线呈短端低于长端的形态。</p></div>
+      <div class="card table-wrap"><h3>关键期限零息债的风险指标</h3><p class="small">面值 100、年复利，收益率取自拟合曲线。</p><table><thead><tr><th>期限</th><th>拟合收益率</th><th>理论价格</th><th>修正久期</th><th>凸性</th></tr></thead><tbody>
+        <tr><td>1 年</td><td>1.1744%</td><td>98.8392</td><td>0.9884</td><td>1.9538</td></tr>
+        <tr><td>3 年</td><td>1.2651%</td><td>96.2987</td><td>2.9625</td><td>11.7020</td></tr>
+        <tr><td>5 年</td><td>1.3777%</td><td>93.3874</td><td>4.9321</td><td>29.1902</td></tr>
+        <tr><td>10 年</td><td>1.6359%</td><td>85.0217</td><td>9.8390</td><td>106.4875</td></tr>
+      </tbody></table><p class="small" style="margin-top:15px">期限拉长同时放大一阶利率敏感度与二阶曲率，因此不能只比较静态收益率。</p></div>
+      <div class="chart-block"><div class="chart-heading"><h3>压力情景下的估值近似误差</h3><span class="small">平行移动 ±50bp、±100bp 与陡峭化</span></div><div class="chart-shell"><iframe title="利率压力测试交互图" loading="lazy" data-plotly src="fixed_income/module3_stress_test_errors.html"></iframe></div><p class="caption">10 年期收益率平行下移 100bp 时，仅久期近似误差 55.408bp；加入凸性后为 2.164bp。大幅冲击下精确重定价仍是最终参照。</p></div>
+      <div class="grid two" style="margin-top:18px">
+        <div class="card"><h3>债券指数的利率敏感度</h3><p>以 10 年期国债收益率日变化解释债券日收益，使用含截距回归和 Newey–West HAC 标准误。上证国债指数的隐含久期约 0.91 年，政金债 ETF 为 6.16 年；上证企债指数系数不显著（p = 0.93），单一国债利率因子难以解释信用债走势。</p></div>
+        <div class="card"><h3>2024 年末利率下行检验</h3><p>10 年期国债收益率下降 46.54bp，政金债 ETF、上证国债指数和企债指数分别上涨 3.83%、2.28%、0.76%。以固定剩余期限 10 年的零息债估值，加入凸性将近似误差从 11.63bp 降至 0.21bp。</p></div>
+      </div>
+      <div class="chart-block"><div class="chart-heading"><h3>252 日滚动隐含久期</h3><span class="small">共同交易日滚动回归</span></div><div class="chart-shell"><iframe title="债券指数滚动隐含久期交互图" loading="lazy" data-plotly src="fixed_income/module3_rolling_rate_duration.html"></iframe></div><p class="caption">隐含利率敏感度随时间变化。企债的滚动估计在部分窗口为负，反映单因子统计关系受信用利差等因素影响，不应解释为现金流久期为负。</p></div>
+    </section>
+
+    <section id="allocation">
+      <div class="section-head"><div><span class="section-no">05 · 模块四</span><h2>七类股债配置策略</h2></div></div>
+      <p class="section-intro">以沪深 300 和上证国债指数为核心资产，月末收盘后形成信号，下一交易日执行。月内权重随市场自然漂移，默认单边交易成本 10bp，不使用杠杆。</p>
+      <div class="strategy-grid">
+        <div class="card"><span class="tag">边界基准</span><h3>全股 / 全债</h3><p>分别保持 100% 沪深 300 和 100% 上证国债指数，用来观察权益风险上限及债券价格指数的低波动特征。</p></div>
+        <div class="card"><span class="tag">固定权重</span><h3>60/40</h3><p>每月将股票和债券恢复到 60% / 40%，作为规则简单、便于比较的组合基准。</p></div>
+        <div class="card"><span class="tag">风险权重</span><h3>风险平价</h3><p>根据过去 60 日两类资产的波动率倒数分配权重；在本样本中由于债券波动很低，组合明显偏向债券。</p></div>
+        <div class="card"><span class="tag">协方差优化</span><h3>滚动最小方差</h3><p>用过去 120 日协方差估计最小方差权重，并把股票权重限制在 20%—80%；股票下限在不少时期成为主要约束。</p></div>
+        <div class="card"><span class="tag">动态风险控制</span><h3>波动率目标</h3><p>以 60/40 为基础，根据过去 60 日组合波动调整股票敞口，年化目标为 10%，不通过加杠杆追逐目标。</p></div>
+        <div class="card"><span class="tag">期限匹配</span><h3>目标日期</h3><p>股票目标权重在五年内由 70% 线性下降到 30%，反映资金接近到期时逐步降低权益风险的安排。</p></div>
+      </div>
+      <div class="chart-block"><div class="chart-heading"><h3>策略净值比较</h3><span class="small">七类策略 · 对数纵轴</span></div><div class="chart-shell"><iframe title="七类策略净值交互图" loading="lazy" data-plotly src="../figures/module4/nav_comparison.html"></iframe></div><p class="caption">目标日期策略样本内年化收益 6.17%，高于固定 60/40 的 5.00%；这与样本中的权益市场时序有关。</p></div>
+      <div class="chart-block"><div class="chart-heading"><h3>策略回撤比较</h3><span class="small">七类策略 · 逐日回撤</span></div><div class="chart-shell"><iframe title="七类策略回撤交互图" loading="lazy" data-plotly src="../figures/module4/drawdown_comparison.html"></iframe></div><p class="caption">全股最大回撤 45.60%，固定 60/40 为 26.30%，目标日期为 17.43%；滚动最小方差为 4.30%，但其权益仓位经常接近下限。</p></div>
+      <div class="card table-wrap"><h3>样本内绩效总览</h3><table><thead><tr><th>策略</th><th>年化收益</th><th>年化波动</th><th>Sharpe</th><th>最大回撤</th></tr></thead><tbody>
+        <tr><td>全股</td><td>4.64%</td><td>19.06%</td><td>0.244</td><td>45.60%</td></tr>
+        <tr><td>全债</td><td>4.21%</td><td>0.72%</td><td>5.889</td><td>1.02%</td></tr>
+        <tr><td>固定 60/40</td><td>5.00%</td><td>11.39%</td><td>0.439</td><td>26.30%</td></tr>
+        <tr><td>风险平价</td><td>4.41%</td><td>0.91%</td><td>4.868</td><td>0.77%</td></tr>
+        <tr><td>滚动最小方差</td><td>4.65%</td><td>3.76%</td><td>1.237</td><td>4.30%</td></tr>
+        <tr><td>波动率目标</td><td>5.18%</td><td>10.10%</td><td>0.514</td><td>26.50%</td></tr>
+        <tr class="highlight"><td>目标日期</td><td>6.17%</td><td>9.11%</td><td>0.677</td><td>17.43%</td></tr>
+      </tbody></table><p class="small" style="margin-top:15px">全债与风险平价的 Sharpe 很高，主要受极低的债券指数点位波动及零无风险利率口径影响，不能直接等同于可交易产品的收益风险比。</p></div>
+    </section>
+
+    <section id="robustness">
+      <div class="section-head"><div><span class="section-no">06 · 模块四深化</span><h2>稳健性与成本敏感性</h2></div></div>
+      <p class="section-intro">策略排名需要放在具体实现假设中理解。我们改变调仓频率、股票代理和单边交易成本，观察结论在哪些条件下会变化。</p>
+      <div class="grid three">
+        <div class="card"><div class="metric">13.74%</div><div class="metric-label">替换股票代理后的 60/40 回撤</div><p>用上证综指替代沪深 300 后，最大回撤由 26.30% 降至 13.74%。资产代理选择对风险结论影响显著。</p></div>
+        <div class="card"><div class="metric">4.27%</div><div class="metric-label">波动率目标季度调仓收益</div><p>月度调仓为 5.18%。波动率信号对调仓频率较敏感，低频执行可能延迟仓位恢复。</p></div>
+        <div class="card"><div class="metric">35.8bp</div><div class="metric-label">波动率目标成本损耗</div><p>单边成本 30bp 相对零成本的年化收益损耗；目标日期策略对应损耗约 8.3bp。</p></div>
+      </div>
+      <div class="callout">固定 60/40 的月度与季度调仓结果接近；目标日期策略在成本试验中相对稳定。更高换手的波动率目标策略对费用假设更敏感。</div>
+    </section>
+  </main>
+  <div class="conclusion"><div class="wrap"><section id="conclusion">
+    <span class="section-no">07 · 综合判断</span><h2>配置建议与研究局限</h2>
+    <p class="section-intro" style="margin:20px 0 28px">以目标日期策略作为五年期稳健增值资金的样本内主方案，固定 60/40 作为透明基准，滚动最小方差作为保守参照。使用时持续监控股票仓位、股债相关、利率风险与交易成本。</p>
+    <div class="grid three">
+      <div class="card"><h3>样本路径</h3><p>目标日期策略前期高股票、后期逐步降仓，恰好与本样本的市场时序较为匹配；未来收益顺序不同，优势可能消失。</p></div>
+      <div class="card"><h3>资产与模型</h3><p>债券指数点位不是可直接交易的全收益产品。零息债、单利率因子和简化压力情景无法覆盖票息、利差、流动性及产品跟踪误差。</p></div>
+      <div class="card"><h3>样本外验证</h3><p>七类策略在同一窗口比较，尚无独立验证期、走步回测和绩效差异显著性检验。参数、窗口和成本变化仍需进一步测试。</p></div>
+    </div>
+  </section></div></div>
+  <footer><div class="wrap">详细方法、数据口径与小组分工见 <a href="项目报告.md">项目报告</a>和 <a href="../README.md">运行与复现说明</a>。图表基于仓库已有分析输出，均可离线交互查看。</div></footer>
+  <script>
+    function resizePlotlyFrame(frame) {
+      try {
+        const frameWindow = frame.contentWindow;
+        const chart = frameWindow.document.querySelector('.js-plotly-plot');
+        if (!chart || !frameWindow.Plotly) return;
+        frameWindow.document.body.style.margin = '0';
+        frameWindow.document.body.style.overflow = 'hidden';
+        const width = Math.max(360, frame.clientWidth);
+        const height = Math.max(330, frame.clientHeight);
+        frameWindow.Plotly.relayout(chart, { width, height, autosize: false });
+      } catch (error) {
+        // Browsers may restrict local file frames; the original chart remains usable.
+      }
+    }
+
+    const plotlyFrames = document.querySelectorAll('iframe[data-plotly]');
+    plotlyFrames.forEach((frame) => {
+      frame.addEventListener('load', () => resizePlotlyFrame(frame));
+    });
+    window.addEventListener('resize', () => {
+      plotlyFrames.forEach((frame) => resizePlotlyFrame(frame));
+    });
+  </script>
+</body>
+</html>

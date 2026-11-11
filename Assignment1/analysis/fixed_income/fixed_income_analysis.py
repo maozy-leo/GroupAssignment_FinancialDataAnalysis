@@ -113,6 +113,12 @@ def main() -> None:
         results,
         paths.output / "module3_fixed_income_dashboard.html",
     )
+    for figure_name, figure in figures.items():
+        figure.write_html(
+            paths.output / f"{figure_name}.html",
+            include_plotlyjs="directory",
+            full_html=True,
+        )
     export_static_figures(figures, paths.figures)
 
     print(f"Module 3 outputs written to: {paths.output}")

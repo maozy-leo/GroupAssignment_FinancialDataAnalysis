@@ -97,17 +97,17 @@ class AnalysisPaths:
 
     @classmethod
     def from_script(cls) -> "AnalysisPaths":
-        """Build the standard submission paths from this package.
+        """Build the standard Assignment 1 paths from this package.
 
         Returns:
-            Paths rooted at the submission folder that contains ``代码/``.
+            Paths rooted at the repository's ``Assignment1`` directory.
         """
-        root = Path(__file__).resolve().parents[1]
+        assignment_dir = Path(__file__).resolve().parents[2]
         return cls(
-            database=root / "数据" / "data.duckdb",
-            figures=root / "图表",
-            output=root / "结果表",
-            report=root / "报告",
+            database=assignment_dir / "data" / "data.duckdb",
+            figures=assignment_dir / "figures" / "module2",
+            output=assignment_dir / "output" / "equity",
+            report=assignment_dir / "output" / "equity",
         )
 
 

@@ -1,11 +1,12 @@
 """Command-line entry point for Module 2, parts 3–4.
 
-Running this script from the submission folder regenerates every deliverable:
+Running this script from the repository root regenerates every deliverable:
 
-    python 代码/part34_analysis.py
+    python Assignment1/analysis/equity/part34_analysis.py
 
-It writes the CSV tables into ``结果表/``, the SVG/PNG figures into ``图表/``,
-the Markdown report into ``报告/`` and the offline HTML into ``交互页面/``.
+It writes CSV tables, the Markdown report, and the offline HTML into
+``Assignment1/output/equity/``. SVG/PNG figures are written into
+``Assignment1/figures/module2/``.
 """
 
 from __future__ import annotations
@@ -99,8 +100,14 @@ def main() -> None:
     write_report(results, paths.report / "模块2_第3-4部分_报告.md")
     write_combined_html(
         figures,
-        paths.report.parent / "交互页面" / "模块2_第3-4部分_交互图.html",
+        paths.output / "模块2_第3-4部分_交互图.html",
     )
+    for figure_name, figure in figures.items():
+        figure.write_html(
+            paths.output / f"{figure_name}.html",
+            include_plotlyjs="directory",
+            full_html=True,
+        )
     export_static_figures(figures, paths.figures)
 
     print(f"结果表: {paths.output}")

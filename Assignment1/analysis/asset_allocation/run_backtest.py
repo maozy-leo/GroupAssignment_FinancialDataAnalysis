@@ -27,9 +27,11 @@ from strategies import (
     AllBondStrategy,
     AllStockStrategy,
     RiskParityStrategy,
+    RollingMinimumVarianceStrategy,
     SixtyFortyStrategy,
     Strategy,
     TargetDateStrategy,
+    VolatilityTargetStrategy,
 )
 
 # 路径自动寻址：本文件位于 Assignment1/analysis/asset_allocation/ 下，
@@ -38,7 +40,7 @@ ASSIGNMENT_DIR: Path = Path(__file__).resolve().parents[2]
 OUTPUT_DIR: Path = ASSIGNMENT_DIR / "output" / "asset_allocation"
 FIGURES_DIR: Path = ASSIGNMENT_DIR / "figures" / "module4"
 
-# 报告区间起点：2018 年数据仅用于风险平价等策略的滚动波动率预热，
+# 报告区间起点：2018 年数据用于动态策略的滚动窗口预热，
 # 绩效与净值展示从 2019-01-01 开始。
 REPORT_START_DATE: str = "2019-01-01"
 
@@ -54,14 +56,23 @@ METRIC_LABELS: dict[str, str] = {
 PERCENT_METRICS: frozenset[str] = frozenset(
     {"年化收益率", "年化波动率", "最大回撤", "月度胜率"}
 )
+STRATEGY_DISPLAY_NAMES: dict[str, str] = {
+    "AllStock": "全股",
+    "AllBond": "全债",
+    "SixtyForty": "60/40",
+    "RiskParity": "风险平价",
+    "RollingMinVariance": "最小方差",
+    "VolatilityTarget": "波动率目标",
+    "TargetDate": "目标日期",
+}
 
 
 def build_strategies() -> list[Strategy]:
     """构建本次回测的全部配置策略。
 
-    ``AllStock_AllBond`` 基准拆分为 ``AllStock``（100% 股票）与 ``AllBond``
-    （100% 债券）两条基准曲线，加上 60/40、风险平价、目标日期三个配置策略，
-    共 5 条净值曲线。
+    基准拆分为 ``AllStock``（100% 股票）与 ``AllBond``（100% 债券）
+    两条曲线，加上 60/40、风险平价、滚动最小方差、波动率目标和
+    目标日期五个配置策略，共 7 条净值曲线。
 
     Returns:
         策略实例列表。
@@ -71,11 +82,15 @@ def build_strategies() -> list[Strategy]:
         AllBondStrategy(),
         SixtyFortyStrategy(),
         RiskParityStrategy(),
+        RollingMinimumVarianceStrategy(),
+        VolatilityTargetStrategy(),
         TargetDateStrategy(start_date=REPORT_START_DATE),
     ]
 
 
-def format_metrics_table(results: list[tuple[str, pd.DataFrame, dict[str, float]]]) -> pd.DataFrame:
+def format_metrics_table(
+    results: list[tuple[str, pd.DataFrame, dict[str, float]]],
+) -> pd.DataFrame:
     """将各策略绩效指标整理为 DataFrame，并对百分比指标格式化。
 
     Args:
@@ -110,7 +125,9 @@ def print_metrics_table(table: pd.DataFrame) -> None:
     print()
 
 
-def plot_nav_comparison(results: list[tuple[str, pd.DataFrame, dict[str, float]]]) -> None:
+def plot_nav_comparison(
+    results: list[tuple[str, pd.DataFrame, dict[str, float]]],
+) -> None:
     """绘制并保存各策略的对数坐标净值曲线对比图。
 
     Args:
@@ -123,24 +140,33 @@ def plot_nav_comparison(results: list[tuple[str, pd.DataFrame, dict[str, float]]
                 x=nav["trade_date"],
                 y=nav["nav"],
                 mode="lines",
-                name=name,
+                name=STRATEGY_DISPLAY_NAMES.get(name, name),
             )
         )
     fig.update_layout(
-        title="四大配置策略净值对比（对数坐标）",
+        title="股债配置策略净值对比（对数坐标）",
         xaxis_title="日期",
         yaxis_title="净值（对数坐标）",
         yaxis_type="log",
         template="plotly_white",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        margin=dict(l=60, r=30, t=60, b=40),
+        legend=dict(
+            orientation="v",
+            yanchor="top",
+            y=1,
+            xanchor="left",
+            x=1.01,
+            font=dict(size=11),
+        ),
+        margin=dict(l=60, r=175, t=60, b=40),
     )
     path = FIGURES_DIR / "nav_comparison.html"
     fig.write_html(path)
     print(f"已保存净值对比图: {path}")
 
 
-def plot_drawdown_comparison(results: list[tuple[str, pd.DataFrame, dict[str, float]]]) -> None:
+def plot_drawdown_comparison(
+    results: list[tuple[str, pd.DataFrame, dict[str, float]]],
+) -> None:
     """绘制并保存各策略的回撤阴影对比图。
 
     Args:
@@ -154,18 +180,25 @@ def plot_drawdown_comparison(results: list[tuple[str, pd.DataFrame, dict[str, fl
                 x=nav["trade_date"],
                 y=drawdown,
                 mode="lines",
-                name=name,
+                name=STRATEGY_DISPLAY_NAMES.get(name, name),
                 fill="tozeroy",
             )
         )
     fig.update_layout(
-        title="四大配置策略回撤阴影对比",
+        title="股债配置策略回撤阴影对比",
         xaxis_title="日期",
         yaxis_title="回撤幅度",
         yaxis_tickformat=".0%",
         template="plotly_white",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        margin=dict(l=60, r=30, t=60, b=40),
+        legend=dict(
+            orientation="v",
+            yanchor="top",
+            y=1,
+            xanchor="left",
+            x=1.01,
+            font=dict(size=11),
+        ),
+        margin=dict(l=60, r=175, t=60, b=40),
     )
     path = FIGURES_DIR / "drawdown_comparison.html"
     fig.write_html(path)
@@ -190,7 +223,9 @@ def _run_strategy_nav(
         归一化（净值从 1.0 起）后的逐日净值表。
     """
     nav = backtester.run(prices, strategy, signals)
-    nav = nav[nav["trade_date"] >= pd.Timestamp(REPORT_START_DATE)].reset_index(drop=True)
+    nav = nav[
+        nav["trade_date"] >= pd.Timestamp(REPORT_START_DATE)
+    ].reset_index(drop=True)
     nav["nav"] = nav["nav"] / nav["nav"].iloc[0]
     return nav
 
@@ -214,8 +249,14 @@ def run_robustness_checks(
     backtester = Backtester()
     quarterly_signals = loader.extract_quarter_end_signals(prices)
 
-    # (1) 调仓频率：月度 vs 季度（60/40 与风险平价）。
-    for strategy in (SixtyFortyStrategy(), RiskParityStrategy()):
+    # (1) 调仓频率：月度 vs 季度（固定配置与动态风险策略）。
+    frequency_strategies: tuple[Strategy, ...] = (
+        SixtyFortyStrategy(),
+        RiskParityStrategy(),
+        RollingMinimumVarianceStrategy(),
+        VolatilityTargetStrategy(),
+    )
+    for strategy in frequency_strategies:
         for label, sig in (("月度", monthly_signals), ("季度", quarterly_signals)):
             nav = _run_strategy_nav(backtester, prices, strategy, sig)
             rows.append(
@@ -299,7 +340,7 @@ def print_robustness_table(robustness: pd.DataFrame) -> None:
 
 
 def print_cost_sensitivity_table(sensitivity: pd.DataFrame) -> None:
-    """格式化打印交易成本敏感性对比表（含相对 0bp 的收益损耗）。
+    """格式化打印交易成本敏感性对比表。
 
     Args:
         sensitivity: ``run_cost_sensitivity`` 返回的 DataFrame。
@@ -319,7 +360,10 @@ def print_cost_sensitivity_table(sensitivity: pd.DataFrame) -> None:
     print()
 
 
-def save_robustness_results(robustness: pd.DataFrame, sensitivity: pd.DataFrame) -> None:
+def save_robustness_results(
+    robustness: pd.DataFrame,
+    sensitivity: pd.DataFrame,
+) -> None:
     """将稳健性与敏感性结果合并保存为 CSV。
 
     Args:

@@ -285,15 +285,6 @@ def create_event_figure(
         row=1,
         col=1,
     )
-    figure.add_annotation(
-        x="2024-10-01",
-        y=0.99,
-        xref="x",
-        yref="paper",
-        text="国庆休市",
-        showarrow=False,
-        font={"size": 11, "color": "#4b5563"},
-    )
     figure.add_hline(y=1.0, line_dash="dot", line_color="#6b7280", row=1, col=1)
     figure.add_hline(y=0.0, line_width=1.0, line_color="black", row=2, col=1)
     session_labels = list(
@@ -314,7 +305,13 @@ def create_event_figure(
         title="2024年9—10月脉冲行情：净值路径与单日波动",
         template="plotly_white",
         barmode="group",
-        legend={"orientation": "h", "y": 1.08, "traceorder": "normal"},
+        legend={
+            "orientation": "h",
+            "x": 0,
+            "y": 1.12,
+            "traceorder": "normal",
+        },
+        margin={"l": 80, "r": 45, "t": 125, "b": 75},
         hovermode="closest",
     )
     return figure

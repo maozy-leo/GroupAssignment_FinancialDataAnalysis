@@ -139,7 +139,7 @@ def _report_header() -> str:
     """Build the report title and the shared-definition paragraph."""
     return f"""# 模块2（第3—4部分）：股债相关性与2024年脉冲行情
 
-数据全部通过 SQL 从课程数据库 `数据/data.duckdb` 读取，分析区间为 **{ANALYSIS_START_DATE} 起至数据库最新共同交易日**。日收益率定义为 $r_t=\\ln(P_t/P_{{t-1}})$；年化按每年 252 个交易日换算；两个资产的相关系数在共同交易日上计算，{ROLLING_CORR_WINDOW} 日滚动窗口只有在观测完整时才输出。本报告只包含模块2的第3、4部分。"""
+数据全部通过 SQL 从课程数据库 `Assignment1/data/data.duckdb` 读取，分析区间为 **{ANALYSIS_START_DATE} 起至数据库最新共同交易日**。日收益率定义为 $r_t=\\ln(P_t/P_{{t-1}})$；年化按每年 252 个交易日换算；两个资产的相关系数在共同交易日上计算，{ROLLING_CORR_WINDOW} 日滚动窗口只有在观测完整时才输出。本报告只包含模块2的第3、4部分。"""
 
 
 def _section_correlation(results: AnalysisResults) -> str:
@@ -252,11 +252,11 @@ def _section_correlation(results: AnalysisResults) -> str:
 
 **图 3-1　股债120日滚动相关系数（2022—2024 区间已标注）**
 
-![股债120日滚动相关系数](../图表/图3-1_股债120日滚动相关.svg)
+![股债120日滚动相关系数](../../figures/module2/图3-1_股债120日滚动相关.svg)
 
 **图 3-2　分年度股债相关系数与 2022—2024 稳定性检验**
 
-![分年度股债相关系数](../图表/图3-2_分年度股债相关.svg)
+![分年度股债相关系数](../../figures/module2/图3-2_分年度股债相关.svg)
 
 **结果说明什么：** 主结果（沪深300—上证国债指数）全样本相关系数为 {_number(main['full_sample_correlation'], 3)}，{ROLLING_CORR_WINDOW} 日滚动值的期末值为 {_number(main['latest_rolling_correlation'], 3)}，区间内在 {_number(main['minimum_rolling_correlation'], 3)}（{_date(main['minimum_date'])}）与 {_number(main['maximum_rolling_correlation'], 3)}（{_date(main['maximum_date'])}）之间变动，{_pct(main['negative_share'], 1)} 的滚动观测为负，说明负相关是常态但绝非必然。补充结果（沪深300—上证企债指数）全样本仅 {_number(supplement['full_sample_correlation'], 3)}，负相关占比 {_pct(supplement['negative_share'], 1)}，明显弱于国债，说明“股债跷跷板”主要来自无风险利率与避险需求，而不是信用债。
 
@@ -333,7 +333,7 @@ def _section_event(results: AnalysisResults) -> str:
 
 **图 4-1　2024 年脉冲行情：基准化净值路径（上）与单日收益（下）**
 
-![2024年脉冲行情净值路径与单日收益](../图表/图4-1_2024脉冲行情_净值与单日收益.svg)
+![2024年脉冲行情净值路径与单日收益](../../figures/module2/图4-1_2024脉冲行情_净值与单日收益.svg)
 
 **结果说明什么：** 8 个交易日内沪深300 累计上涨 {_pct(equity['cumulative_return'], 2)}，单日最大涨幅 {_pct(equity['max_daily_gain'], 2)}（{_date(equity['max_daily_gain_date'])}），区间日波动率 {_pct(equity['daily_volatility'], 3)}，折年 {_pct(equity['annualized_volatility'], 2)}，远高于权益资产的常态波动水平。同期上证国债指数下跌 {_pct(abs(float(bond['cumulative_return'])), 2)}，几乎没有提供对冲。60/40 组合（首日 60% 股票 + 40% 债券，区间内不再平衡）累计上涨 {_pct(portfolio['cumulative_return'], 2)}，保留了股票涨幅的 {_pct(retained, 1)}，年化波动率 {_pct(portfolio['annualized_volatility'], 2)}，比纯股票低 {_pct(volatility_reduction, 1)}；{down_day_text}组合的最大回撤为 {_pct(portfolio['max_drawdown'], 2)}，因为行情全程单边向上。
 
