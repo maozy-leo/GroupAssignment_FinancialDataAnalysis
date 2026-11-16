@@ -4,6 +4,14 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>中国股债配置研究｜第一次小组作业</title>
+  <link rel="stylesheet" href="assets/katex/katex.min.css">
+  <script defer src="assets/katex/katex.min.js"></script>
+  <script defer src="assets/katex/auto-render.min.js"></script>
+  <script defer src="fixed_income/plotly.min.js"></script>
+  <script defer src="fixed_income/module3_project_figures.js"></script>
+  <script defer src="assets/fixed-income-report.js"></script>
+  <script defer src="asset_allocation/robustness_project_figures.js"></script>
+  <script defer src="assets/allocation-robustness.js"></script>
   <style>
     :root {
       --navy: #142b3e;
@@ -35,10 +43,7 @@
       padding: 92px 0 86px;
     }
     .eyebrow { margin: 0 0 18px; color: #93d8d2; font-size: 14px; font-weight: 800; letter-spacing: .14em; }
-    h1 { margin: 0 0 24px; font-size: clamp(42px, 5.8vw, 76px); line-height: 1.12; letter-spacing: -.035em; }
-    .hero-lead { max-width: 850px; margin: 0 0 36px; color: #dceaf2; font-size: clamp(20px, 2.2vw, 28px); }
-    .hero-meta { display: flex; flex-wrap: wrap; gap: 12px; }
-    .hero-meta span { padding: 8px 14px; border: 1px solid #ffffff50; border-radius: 20px; color: #dceaf2; font-size: 14px; }
+    h1 { margin: 0; font-size: clamp(42px, 5.8vw, 76px); line-height: 1.12; letter-spacing: -.035em; }
     .topbar { position: sticky; top: 0; z-index: 10; background: rgba(255, 255, 255, .95); border-bottom: 1px solid var(--line); backdrop-filter: blur(12px); }
     .nav { display: flex; align-items: center; gap: 22px; overflow-x: auto; white-space: nowrap; padding: 12px 0; font-size: 14px; font-weight: 700; }
     .nav a { color: var(--navy-light); }
@@ -83,15 +88,37 @@
     tr.highlight { color: #167d75; background: var(--teal-soft); font-weight: 800; }
     .table-wrap { overflow-x: auto; }
     .table-wrap table { min-width: 680px; }
+    #data .section-intro { max-width: 1000px; }
+    #data > p { max-width: 1100px; }
+    .data-table { margin: 20px 0 24px; border: 1px solid var(--line); border-radius: 12px; background: var(--white); }
+    .data-table table { min-width: 860px; }
+    .data-table th, .data-table td { text-align: left; vertical-align: top; }
+    .data-table th { background: #edf3f5; }
+    .data-table th:nth-child(3), .data-table td:nth-child(3) { text-align: right; white-space: nowrap; }
+    .data-table th:last-child, .data-table td:last-child { width: 250px; }
+    .data-table tbody tr:last-child td { border-bottom: 0; }
+    #data code { font-size: .9em; }
+    .data-table code { white-space: nowrap; }
+    .data-links, .report-links { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 22px; padding-top: 16px; border-top: 1px solid var(--line); font-weight: 700; }
+    .bond-formula { margin: 18px 0; padding: 18px 24px; overflow-x: auto; border-left: 3px solid var(--teal); background: var(--white); }
+    .bond-formula .katex-display { margin: 0; text-align: left; }
+    .bond-formula .katex-display > .katex { text-align: left; }
+    .bond-formula .katex { font-size: 1.08em; }
+    .bond-plot { width: 100%; min-width: 0; height: 550px; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: var(--white); box-shadow: var(--shadow); }
+    .bond-table { margin: 18px 0; }
+    #bond .compact table { min-width: 0; }
+    .bond-details { margin: 18px 0; }
+    .bond-details summary { color: #147c78; cursor: pointer; font-weight: 700; }
+    .robustness-table { margin: 18px 0; }
+    .robustness-plot { width: 100%; min-width: 0; margin: 18px 0; overflow: hidden; border: 1px solid var(--line); border-radius: 13px; background: white; }
+    .robustness-controls { display: flex; flex-wrap: wrap; gap: 12px 24px; margin: 18px 0; }
+    .robustness-control { display: block; margin-top: 18px; }
+    #robustness select { max-width: 100%; margin: 0 8px; padding: 6px 10px; border: 1px solid var(--line); border-radius: 5px; color: var(--ink); background: white; font: inherit; }
+    #bond .chart-block > p { max-width: 1100px; }
     .strategy-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
     .strategy-grid .card { padding: 23px 26px; }
     .strategy-grid .card p { margin: 0; color: var(--muted); font-size: 15px; }
     .tag { display: inline-block; margin-bottom: 12px; padding: 3px 9px; border-radius: 4px; background: var(--teal-soft); color: #167d75; font-size: 12px; font-weight: 800; }
-    .conclusion { color: white; background: var(--navy); }
-    .conclusion .card { color: var(--ink); }
-    .conclusion h2 { color: white; }
-    .conclusion .section-intro { color: #bdd2df; }
-    .conclusion section { padding-bottom: 65px; }
     footer { padding: 35px 0 50px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
     @media (max-width: 800px) {
       .wrap { width: min(100% - 28px, 1200px); }
@@ -112,17 +139,14 @@
     <div class="wrap">
       <p class="eyebrow">金融数据分析导论 · 第一次小组作业 · 第12组</p>
       <h1>中国股债配置研究</h1>
-      <p class="hero-lead">面向 5 年后到期、目标稳健增值的资金，开展数据整理、权益与固定收益分析，并比较股债配置策略的历史表现。</p>
-      <div class="hero-meta"><span>正式样本：2019-01—2026-10</span><span>核心资产：沪深 300 + 上证国债指数</span><span>七类策略 · 月末信号 · 10bp 成本</span></div>
     </div>
   </header>
   <div class="topbar"><nav class="nav wrap" aria-label="章节导航">
-    <a href="#top">首页</a><a href="#overview">研究框架</a><a href="#data">数据工程</a><a href="#equity">权益分析</a><a href="#bond">固定收益</a><a href="#allocation">配置回测</a><a href="#robustness">稳健性</a><a href="#conclusion">结论与不足</a>
+    <a href="#top">首页</a><a href="#overview">研究框架</a><a href="#data">数据工程</a><a href="#equity">权益分析</a><a href="#bond">固定收益</a><a href="#allocation">配置回测</a><a href="#robustness">稳健性</a><a href="#discussion">讨论与局限性</a>
   </nav></div>
   <main class="wrap">
     <section id="overview">
-      <div class="section-head"><div><span class="section-no">01 · 研究框架</span><h2>研究目标与分析方法</h2></div></div>
-      <p class="section-intro">研究问题是：在中国市场中，如何为五年期稳健增值资金确定股债比例，并认识到历史绩效背后的利率、权益尾部和交易风险。</p>
+      <div class="section-head"><div><span class="section-no">01 · 前言</span><h2>研究框架</h2></div></div>
       <div class="flow">
         <div class="flow-item"><strong>数据工程</strong><span>课程接口、清洗、DuckDB、质量校验</span></div>
         <div class="flow-item"><strong>权益研究</strong><span>厚尾、滚动波动、股债相关、脉冲行情</span></div>
@@ -132,22 +156,35 @@
       <div class="grid three">
         <div class="card"><div class="metric">6.17%</div><div class="metric-label">目标日期策略年化收益</div><p class="small">样本内七类策略最高；最大回撤 17.43%。</p></div>
         <div class="card"><div class="metric">−0.163</div><div class="metric-label">全样本股债相关</div><p class="small">负相关常见，但 120 日滚动相关在样本末端转正。</p></div>
-        <div class="card"><div class="metric">0.877bp</div><div class="metric-label">NS 曲线拟合 RMSE</div><p class="small">2026-10-16 的八个国债期限点。</p></div>
+        <div class="card"><div class="metric">0.877bp</div><div class="metric-label">NS 曲线拟合 RMSE</div><p class="small">数据库标记为 2026-10-16 的八个国债期限点。</p></div>
       </div>
     </section>
 
     <section id="data">
-      <div class="section-head"><div><span class="section-no">02 · 模块一</span><h2>数据来源、清洗与校验</h2></div></div>
-      <p class="section-intro">数据通过课程统一接口获取，按资产、日期、价格和收益率口径清洗后进入 DuckDB。各分析模块只读查询同一份数据库快照，跨资产计算采用共同交易日。</p>
-      <div class="grid four">
-        <div class="card"><div class="metric">7</div><div class="metric-label">市场资产</div><p class="small">四个权益指数、两个债券指数和一个政金债 ETF 代理。</p></div>
-        <div class="card"><div class="metric">13,121</div><div class="metric-label">市场日线</div><p class="small">指数点位或 ETF 前复权价格。</p></div>
-        <div class="card"><div class="metric">8,776</div><div class="metric-label">国债历史收益率</div><p class="small">2、5、10、30 年期序列。</p></div>
-        <div class="card"><div class="metric">1,887</div><div class="metric-label">核心共同交易日</div><p class="small">2019-01-02 至 2026-10-16。</p></div>
+      <div class="section-head"><div><span class="section-no">02 · 模块一</span><h2>数据说明</h2></div></div>
+      <p class="section-intro">数据来自课程统一接口 <code>utils/findata_lib.py</code>，于 2026-10-18 获取，经清洗后存入 <a href="../data/data.duckdb">DuckDB 数据库</a>，供各分析模块统一读取。</p>
+      <p>原始日频区间为 <strong>2018-01-02 至 2026-10-16</strong>；正式分析从 2019 年开始，2018 年仅用于滚动指标预热。市场数据涵盖沪深 300、中证 500、科创 50、上证综指，以及上证国债指数、上证企债指数和政金债券 ETF（<code>511520</code>），另有国债收益率历史、收益率曲线与交易日历。</p>
+
+      <div class="table-wrap data-table" role="region" aria-label="DuckDB 数据库内容" tabindex="0">
+        <table aria-label="DuckDB 数据库内容">
+          <thead><tr><th scope="col">表名</th><th scope="col">内容与用途</th><th scope="col">记录数</th><th scope="col">日期范围</th></tr></thead>
+          <tbody>
+            <tr><td><code>assets</code></td><td>7 个资产的名称、类别、代码、来源与价格口径。</td><td>7</td><td>无</td></tr>
+            <tr><td><code>index_daily</code></td><td>7 个资产的日收盘点位或前复权价格，用于收益分析与配置回测。</td><td>13,121</td><td>2018-01-02—2026-10-16</td></tr>
+            <tr><td><code>gov_yield_daily</code></td><td>2、5、10、30 年期国债收益率历史，用于利率敏感度分析。</td><td>8,776</td><td>2018-01-02—2026-10-16</td></tr>
+            <tr><td><code>yield_curve_snapshot</code></td><td>0.25、0.5、1、3、5、7、10、30 年共 8 个期限点，用于曲线拟合。</td><td>8</td><td>2026-10-16</td></tr>
+            <tr><td><code>trading_calendar</code></td><td>沪深 300 交易日期，用于日期对齐与调仓信号定位。</td><td>2,130</td><td>2018-01-02—2026-10-16</td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="grid two" style="margin-top:18px">
-        <div class="card"><h3>数据质量检查</h3><p>日期统一为交易日字段，收益率在计算中使用小数；检查缺失值、重复主键、非法价格与收益率范围。13 项自动检查中 12 项通过，1 项警告是科创 50 与政金债 ETF 起点较晚。</p><p class="small">2024 年权益大幅波动经相邻价格与公开行情核验后保留。</p></div>
-        <div class="card"><h3>分析区间与复现方式</h3><p>2018 年数据用于 60、120、252 日滚动窗口预热；正式分析从 2019 年开始。日收益为对数收益，年化按 252 个交易日换算；债券指数点位与可交易的全收益产品并不等同。</p><p class="small">仓库内保留 DuckDB 快照，可不依赖实时接口重新生成分析结果。</p></div>
+
+      <p><strong>样本选择：</strong>主回测使用沪深 300 与上证国债指数，2019 年起共有 1,887 个共同价格交易日。四个权益指数的共同收益样本从 2020-01-03 开始，共 1,642 个观测；政金债 ETF 从 2023-05-17 开始，仅用于补充比较。</p>
+      <p><strong>使用口径：</strong>指数采用收盘点位，ETF 采用前复权价格；国债收益率以小数保存，期限单位为年。资产日收益采用对数收益率，年化按 252 个交易日换算；跨资产计算按共同日期对齐，缺失交易日不填充。</p>
+      <p><strong>质量校验：</strong>统一日期和数值类型、按主键去重后，通过 SQL 检查字段缺失、主键唯一性、数值合法性、交易日覆盖及股债日期对齐。对权益单日涨跌幅绝对值超过 5% 的记录，结合相邻价格和公开行情复核，保留真实市场波动。经校验，不存在字段缺失、重复主键或非法数值，数据满足后续分析要求。</p>
+      <div class="data-links" aria-label="数据文档与复现入口">
+        <a href="../data/数据说明.md">数据说明 →</a>
+        <a href="../data/数据质量报告.md">数据质量报告 →</a>
+        <a href="../README.md">运行与复现说明 →</a>
       </div>
     </section>
 
@@ -169,25 +206,148 @@
 
     <section id="bond">
       <div class="section-head"><div><span class="section-no">04 · 模块三</span><h2>固定收益分析</h2></div></div>
-      <p class="section-intro">基于最新国债收益率曲线拟合、零息债久期和凸性、利率压力情景及历史债券指数回归，评估不同债券资产对利率变动的敏感度。</p>
-      <div class="grid three">
-        <div class="card"><div class="metric">0.877bp</div><div class="metric-label">NS 曲线拟合误差</div><p class="small">五组初值收敛于同一组参数，最大残差 1.923bp。</p></div>
-        <div class="card"><div class="metric">9.839</div><div class="metric-label">10 年零息债修正久期</div><p class="small">凸性 106.49，长端对利率冲击更敏感。</p></div>
-        <div class="card"><div class="metric">6.16 年</div><div class="metric-label">政金债 ETF 隐含久期</div><p class="small">上证国债指数约 0.91 年；企债的单因子利率系数不显著。</p></div>
+      <div class="chart-block">
+        <div class="chart-heading"><h3>1. Nelson–Siegel 收益率曲线拟合</h3></div>
+        <p>使用 0.25、0.5、1、3、5、7、10、30 年期国债收益率，以四个参数概括曲线的水平、斜率和曲率。$T$ 为期限（年），$y(T)$ 为小数口径收益率，$\tau$ 控制因子随期限衰减的速度：</p>
+        <div class="bond-formula">
+          $$
+          \begin{aligned}
+          y(T)&=\beta_0+\beta_1\frac{1-e^{-x}}{x}
+          +\beta_2\left(\frac{1-e^{-x}}{x}-e^{-x}\right),\\
+          x&=T/\tau,\qquad \tau>0,\\[0.5em]
+          \hat{\theta}&=\arg\min_{\theta:\,\tau>0}\sum_{i=1}^{8}[y_i-y(T_i;\theta)]^2,\\
+          \mathrm{RMSE}&=\sqrt{\frac{1}{8}\sum_{i=1}^{8}[y_i-\hat y_i]^2}.
+          \end{aligned}
+          $$
+        </div>
+        <details class="bond-details"><summary>查看 Nelson–Siegel 参数估计结果</summary>
+        <div class="card table-wrap bond-table" role="region" aria-label="Nelson–Siegel 参数结果" tabindex="0">
+          <table><thead><tr><th>参数</th><th>估计值</th><th>含义</th></tr></thead><tbody>
+            <tr><td>$\beta_0$</td><td>0.023306</td><td>长期极限水平</td></tr>
+            <tr><td>$\beta_1$</td><td>-0.011797</td><td>短端与长期水平的差异</td></tr>
+            <tr><td>$\beta_2$</td><td>-0.010945</td><td>中段曲率因子</td></tr>
+            <tr><td>$\tau$</td><td>3.559331</td><td>衰减速度参数，单位为年</td></tr>
+          </tbody></table>
+        </div>
+        </details>
+        <div class="bond-plot" data-fixed-income-chart="nelson_siegel_curve" role="region" aria-label="收益率曲线拟合与期限残差交互图"></div>
+        <p class="caption">上方为实际期限点与拟合曲线，下方为逐期限残差。可悬停比较同一期限的收益率与拟合误差。</p>
+        <details class="bond-details"><summary>查看八个期限的实际值、拟合值与残差</summary>
+          <div class="card table-wrap bond-table"><table><thead><tr><th>期限（年）</th><th>实际收益率</th><th>拟合收益率</th><th>残差（bp）</th></tr></thead><tbody>
+            <tr><td>0.25</td><td>1.1568%</td><td>1.1547%</td><td>+0.206</td></tr>
+            <tr><td>0.5</td><td>1.1587%</td><td>1.1600%</td><td>-0.132</td></tr>
+            <tr><td>1</td><td>1.1703%</td><td>1.1744%</td><td>-0.411</td></tr>
+            <tr><td>3</td><td>1.2729%</td><td>1.2651%</td><td>+0.777</td></tr>
+            <tr><td>5</td><td>1.3815%</td><td>1.3777%</td><td>+0.383</td></tr>
+            <tr><td>7</td><td>1.4700%</td><td>1.4892%</td><td>-1.923</td></tr>
+            <tr><td>10</td><td>1.6480%</td><td>1.6359%</td><td>+1.212</td></tr>
+            <tr><td>30</td><td>2.0600%</td><td>2.0611%</td><td>-0.113</td></tr>
+          </tbody></table></div>
+        </details>
       </div>
-      <div class="chart-block"><div class="chart-heading"><h3>国债收益率曲线拟合</h3><span class="small">2026-10-16 · 8 个期限点</span></div><div class="chart-shell"><iframe title="国债收益率曲线交互图" loading="lazy" data-plotly src="fixed_income/module3_nelson_siegel_curve.html"></iframe></div><p class="caption">Nelson–Siegel 模型的五组初值收敛至同一组参数，拟合 RMSE 为 0.877bp。曲线呈短端低于长端的形态。</p></div>
-      <div class="card table-wrap"><h3>关键期限零息债的风险指标</h3><p class="small">面值 100、年复利，收益率取自拟合曲线。</p><table><thead><tr><th>期限</th><th>拟合收益率</th><th>理论价格</th><th>修正久期</th><th>凸性</th></tr></thead><tbody>
-        <tr><td>1 年</td><td>1.1744%</td><td>98.8392</td><td>0.9884</td><td>1.9538</td></tr>
-        <tr><td>3 年</td><td>1.2651%</td><td>96.2987</td><td>2.9625</td><td>11.7020</td></tr>
-        <tr><td>5 年</td><td>1.3777%</td><td>93.3874</td><td>4.9321</td><td>29.1902</td></tr>
-        <tr><td>10 年</td><td>1.6359%</td><td>85.0217</td><td>9.8390</td><td>106.4875</td></tr>
-      </tbody></table><p class="small" style="margin-top:15px">期限拉长同时放大一阶利率敏感度与二阶曲率，因此不能只比较静态收益率。</p></div>
-      <div class="chart-block"><div class="chart-heading"><h3>压力情景下的估值近似误差</h3><span class="small">平行移动 ±50bp、±100bp 与陡峭化</span></div><div class="chart-shell"><iframe title="利率压力测试交互图" loading="lazy" data-plotly src="fixed_income/module3_stress_test_errors.html"></iframe></div><p class="caption">10 年期收益率平行下移 100bp 时，仅久期近似误差 55.408bp；加入凸性后为 2.164bp。大幅冲击下精确重定价仍是最终参照。</p></div>
-      <div class="grid two" style="margin-top:18px">
-        <div class="card"><h3>债券指数的利率敏感度</h3><p>以 10 年期国债收益率日变化解释债券日收益，使用含截距回归和 Newey–West HAC 标准误。上证国债指数的隐含久期约 0.91 年，政金债 ETF 为 6.16 年；上证企债指数系数不显著（p = 0.93），单一国债利率因子难以解释信用债走势。</p></div>
-        <div class="card"><h3>2024 年末利率下行检验</h3><p>10 年期国债收益率下降 46.54bp，政金债 ETF、上证国债指数和企债指数分别上涨 3.83%、2.28%、0.76%。以固定剩余期限 10 年的零息债估值，加入凸性将近似误差从 11.63bp 降至 0.21bp。</p></div>
+
+      <div class="chart-block">
+        <h3>2. 关键期限零息债的久期与凸性</h3>
+        <p>为比较期限风险，将拟合收益率用于面值 100、期限为 1、3、5、10 年的零息债近似，统一采用年复利定价。价格对收益率的一阶、二阶导数分别给出修正久期和凸性：</p>
+        <div class="bond-formula">
+          $$
+          \begin{aligned}
+          P(T)&=\frac{100}{(1+y_T)^T},\qquad D_{\mathrm{Mac}}=T,\\
+          D_{\mathrm{mod}}&=-\frac{1}{P}\frac{\partial P}{\partial y}
+          =\frac{T}{1+y_T},\\
+          C&=\frac{1}{P}\frac{\partial^2P}{\partial y^2}
+          =\frac{T(T+1)}{(1+y_T)^2}.
+          \end{aligned}
+          $$
+        </div>
+        <details class="bond-details"><summary>查看关键期限零息债风险结果</summary>
+        <div class="card table-wrap bond-table" role="region" aria-label="关键期限零息债风险结果" tabindex="0">
+          <table><thead><tr><th>期限（年）</th><th>拟合收益率</th><th>理论价格</th><th>麦考利久期（年）</th><th>修正久期（年）</th><th>凸性</th></tr></thead><tbody>
+            <tr><td>1</td><td>1.1744%</td><td>98.8392</td><td>1</td><td>0.9884</td><td>1.9538</td></tr>
+            <tr><td>3</td><td>1.2651%</td><td>96.2987</td><td>3</td><td>2.9625</td><td>11.7020</td></tr>
+            <tr><td>5</td><td>1.3777%</td><td>93.3874</td><td>5</td><td>4.9321</td><td>29.1902</td></tr>
+            <tr><td>10</td><td>1.6359%</td><td>85.0217</td><td>10</td><td>9.8390</td><td>106.4875</td></tr>
+          </tbody></table>
+        </div>
+        </details>
+        <p><strong>结果解释：</strong>修正久期由 1 年期的 0.9884 增至 10 年期的 9.8390，凸性由 1.9538 增至 106.4875。以 10 年期为例，收益率上行 10bp 时，线性估计的价格跌幅约为 $9.8390\times0.001=0.9839\%$。</p>
+        <p>因此，同为利率债，长期限资产也会承担更高的价格波动。久期用于快速衡量一阶风险，凸性则描述价格—收益率曲线的弯曲程度；后者会在更大的利率变化中变得重要。这里的风险指标来自零息债模型，未显式刻画票息现金流。</p>
       </div>
-      <div class="chart-block"><div class="chart-heading"><h3>252 日滚动隐含久期</h3><span class="small">共同交易日滚动回归</span></div><div class="chart-shell"><iframe title="债券指数滚动隐含久期交互图" loading="lazy" data-plotly src="fixed_income/module3_rolling_rate_duration.html"></iframe></div><p class="caption">隐含利率敏感度随时间变化。企债的滚动估计在部分窗口为负，反映单因子统计关系受信用利差等因素影响，不应解释为现金流久期为负。</p></div>
+
+      <div class="chart-block">
+        <h3>3. 利率压力测试：损益与近似误差</h3>
+        <p>对四个期限分别施加五种冲击：平行上、下移 50bp 和 100bp，以及短端不变、长端上移的陡峭化。陡峭化采用以下期限映射，其中收益率冲击以小数表示：</p>
+        <div class="bond-formula">
+          $$
+          \Delta y(T)=
+          \begin{cases}
+          0,&T\le1,\\
+          0.005(T-1)/9,&1\lt T\lt10,\\
+          0.005,&T\ge10.
+          \end{cases}
+          $$
+        </div>
+        <p>每个情景先按冲击后收益率精确重定价，再比较一阶久期近似与二阶凸性修正。误差为近似收益与精确收益之差的绝对值，乘以 $10^4$ 后记为 bp：</p>
+        <div class="bond-formula">
+          $$
+          \begin{aligned}
+          R_{\mathrm{exact}}&=\frac{P(y+\Delta y)}{P(y)}-1,\\
+          R_D&=-D_{\mathrm{mod}}\Delta y,\\
+          R_{D+C}&=-D_{\mathrm{mod}}\Delta y+\frac12 C(\Delta y)^2.
+          \end{aligned}
+          $$
+        </div>
+        <details class="bond-details"><summary>查看 10 年期零息债压力测试具体结果</summary>
+        <div class="card table-wrap bond-table" role="region" aria-label="10 年期零息债压力测试结果" tabindex="0">
+          <table><thead><tr><th>10 年期情景</th><th>精确收益</th><th>仅久期估计</th><th>久期＋凸性估计</th><th>久期误差（bp）</th><th>修正误差（bp）</th></tr></thead><tbody>
+            <tr><td>平行下移100bp</td><td>+10.3931%</td><td>+9.8390%</td><td>+10.3715%</td><td>55.408</td><td>2.164</td></tr>
+            <tr><td>平行下移50bp</td><td>+5.0553%</td><td>+4.9195%</td><td>+5.0526%</td><td>13.577</td><td>0.266</td></tr>
+            <tr><td>平行上移50bp</td><td>-4.7890%</td><td>-4.9195%</td><td>-4.7864%</td><td>13.053</td><td>0.258</td></tr>
+            <tr><td>平行上移100bp</td><td>-9.3269%</td><td>-9.8390%</td><td>-9.3066%</td><td>51.213</td><td>2.030</td></tr>
+          </tbody></table>
+        </div>
+        </details>
+        <div class="bond-plot" data-fixed-income-chart="stress_test_errors" role="region" aria-label="各期限与情景的近似误差交互热力图"></div>
+        <p class="caption">左右两组使用同一颜色尺度，分别展示仅久期和久期加凸性的绝对误差；窄屏下上下排列。</p>
+        <p><strong>结果解释：</strong>10 年期在利率下移 100bp 时上涨 <strong>10.39%</strong>，上移 100bp 时下跌 <strong>9.33%</strong>，体现正凸性带来的涨跌不对称。在下移情景中，凸性修正将误差从 55.408bp 降至 2.164bp；上移情景中则从 51.213bp 降至 2.030bp。</p>
+        <p>短期限、小幅冲击下，一阶估计通常较接近精确值；期限和冲击幅度扩大后，二阶项的作用更明显。加入凸性仍属于局部近似，压力情景的最终损益以精确重定价为基准。</p>
+      </div>
+
+      <div class="chart-block">
+        <h3>4. 历史利率敏感度</h3>
+        <p>理论久期描述模型债券的价格导数；历史回归则检验真实指数和 ETF 对利率变化的经验反应。分别计算债券日对数收益与 10 年期国债收益率变化，按共同日期合并，估计含截距的单因子模型：</p>
+        <div class="bond-formula">
+          $$
+          \begin{aligned}
+          r_t^{\mathrm{bond}}&=\ln(P_t/P_{t-1}),\qquad
+          \Delta y_t^{10Y}=y_t^{10Y}-y_{t-1}^{10Y},\\
+          r_t^{\mathrm{bond}}&=\alpha+\beta\Delta y_t^{10Y}+\varepsilon_t,
+          \qquad \hat D_{\mathrm{rate}}\approx-\hat\beta.
+          \end{aligned}
+          $$
+        </div>
+        <p>收益率变化采用小数口径。系数由 OLS 估计，显著性使用最大滞后 5 阶的 Newey–West HAC 标准误，以提高推断对异方差和残差自相关的稳健性；HAC 不改变 OLS 点估计。</p>
+        <details class="bond-details"><summary>查看债券利率敏感度样本及方向性结果</summary>
+        <div class="card table-wrap bond-table" role="region" aria-label="债券利率敏感度样本及方向性结果" tabindex="0">
+          <table><thead><tr><th>资产</th><th>回归样本</th><th>观测数</th><th>方向性结果</th></tr></thead><tbody>
+            <tr><td>上证国债指数</td><td>2019-01-02—2026-10-16</td><td>1,887</td><td>显著负向</td></tr>
+            <tr><td>上证企债指数</td><td>2019-01-02—2026-10-16</td><td>1,887</td><td>不显著</td></tr>
+            <tr><td>政金债 ETF</td><td>2023-05-18—2026-10-16</td><td>827</td><td>显著负向</td></tr>
+          </tbody></table>
+        </div>
+        </details>
+        <div class="bond-plot" data-fixed-income-chart="rate_sensitivity_regressions" role="region" aria-label="三类债券收益与利率变化的交互散点图"></div>
+        <p class="caption">散点为逐日观测，直线为含截距 OLS 拟合。可悬停查看日期及收益率变化；窄屏下三个资产依次纵向排列。</p>
+        <p><strong>结果解释：</strong>国债指数和政金债 ETF 的回归系数显著为负，与利率上升压低债券价格的关系一致；政金债 ETF 的经验敏感度更高。企债系数不显著，说明单一 10 年期国债利率变化对该序列的解释力有限，尚不足以据此识别信用利差等其他风险来源。</p>
+      </div>
+
+      <div class="chart-block">
+        <h3>5. 2024 年末利率下行行情</h3>
+        <p>选取 2024-11-01 至 2024-12-31，将三类债券资产和 10 年期国债收益率按共同日期对齐。以首个共同观测为基期，按 $R_t=P_t/P_0-1$ 计算买入持有价格收益。该区间 10 年期国债收益率由 <strong>2.1406% 降至 1.6752%</strong>，累计下降 <strong>46.54bp</strong>。</p>
+        <p>同期，政金债 ETF、上证国债指数和上证企债指数的累计收益分别为 <strong>3.83%、2.28% 和 0.76%</strong>。</p>
+        <div class="bond-plot" data-fixed-income-chart="late_2024_rate_stage" role="region" aria-label="2024 年末国债收益率与债券累计收益交互图"></div>
+        <p><strong>实际行情：</strong>三类资产均上涨，政金债 ETF 收益最高，与其较强的利率敏感度一致。</p>
+      </div>
     </section>
 
     <section id="allocation">
@@ -211,30 +371,51 @@
         <tr><td>滚动最小方差</td><td>4.65%</td><td>3.76%</td><td>1.237</td><td>4.30%</td></tr>
         <tr><td>波动率目标</td><td>5.18%</td><td>10.10%</td><td>0.514</td><td>26.50%</td></tr>
         <tr class="highlight"><td>目标日期</td><td>6.17%</td><td>9.11%</td><td>0.677</td><td>17.43%</td></tr>
-      </tbody></table><p class="small" style="margin-top:15px">全债与风险平价的 Sharpe 很高，主要受极低的债券指数点位波动及零无风险利率口径影响，不能直接等同于可交易产品的收益风险比。</p></div>
+      </tbody></table><!-- allocation-metric-notes --><p class="small">数值注 1：全债 Sharpe 5.889、风险平价 Sharpe 4.868 来自较低的价格指数波动。本报告使用几何年化收益除以对数收益年化波动率、无风险利率取 0；全债年化收益 4.21%、波动约 0.72%，因此比率很高。该口径不同于常见的日超额收益 Sharpe。</p><p class="small">数值注 2：波动率目标的实际年化波动为 10.10%，最大回撤 26.50% 略高于 60/40 的 26.30%。10% 是基于历史窗口的风险预算，不是对未来波动或回撤的硬约束；月度更新、下一交易日收盘执行及只缩减股票敞口的实现，均会使实际风险偏离目标。</p><!-- /allocation-metric-notes --></div>
     </section>
 
     <section id="robustness">
-      <div class="section-head"><div><span class="section-no">06 · 模块四深化</span><h2>稳健性与成本敏感性</h2></div></div>
-      <p class="section-intro">策略排名需要放在具体实现假设中理解。我们改变调仓频率、股票代理和单边交易成本，观察结论在哪些条件下会变化。</p>
-      <div class="grid three">
-        <div class="card"><div class="metric">13.74%</div><div class="metric-label">替换股票代理后的 60/40 回撤</div><p>用上证综指替代沪深 300 后，最大回撤由 26.30% 降至 13.74%。资产代理选择对风险结论影响显著。</p></div>
-        <div class="card"><div class="metric">4.27%</div><div class="metric-label">波动率目标季度调仓收益</div><p>月度调仓为 5.18%。波动率信号对调仓频率较敏感，低频执行可能延迟仓位恢复。</p></div>
-        <div class="card"><div class="metric">35.8bp</div><div class="metric-label">波动率目标成本损耗</div><p>单边成本 30bp 相对零成本的年化收益损耗；目标日期策略对应损耗约 8.3bp。</p></div>
-      </div>
-      <div class="callout">固定 60/40 的月度与季度调仓结果接近；目标日期策略在成本试验中相对稳定。更高换手的波动率目标策略对费用假设更敏感。</div>
+<div class="section-head"><div><span class="section-no">06 · 模块四深化</span><h2>稳健性检验</h2></div></div><p class="section-intro">通过五种方法比较策略对回测设定的敏感程度。除成本检验外均采用单边 10bp，样本区间与数值注释见展开结果。</p><div class="chart-block"><h3>1. 参数敏感性</h3><p><strong>方法：</strong>逐项改变股票比例、估计窗口、仓位下限、波动率目标及滑降参数，共 28 个情景，其余设置不变。</p><p><strong>主要结论：</strong>最小方差对仓位下限更敏感；波动率目标在 30 日、120 日窗口下年化收益为 5.71%、4.59%。目标日期邻近参数下收益为 5.85%—6.48%，在当前样本路径下相对稳定。</p><details class="bond-details"><summary>展开参数敏感性图表与结果</summary><label class="robustness-control">参数组 <select id="parameter-group"></select></label><div id="parameter-sensitivity-chart" class="robustness-plot" role="img" aria-label="参数敏感性收益、Sharpe 与回撤交互图"></div>
+<p class="small">使用沪深 300＋上证国债指数，2019-01-02—2026-10-16 共 1,887 个价格交易日。预先列出九组、28 个情景，每次仅改变一个参数，其余保持默认；2018 年作预热，最长窗口取 240 日，正式期不因历史不足使用回退权重。下表为各组情景的指标范围，各列极值未必来自同一档参数。</p>
+<div class="card table-wrap robustness-table"><table aria-label="参数敏感性"><thead><tr><th>改变参数</th><th>试验档位</th><th>年化收益范围</th><th>Sharpe 范围</th><th>最大回撤范围</th></tr></thead><tbody><tr><td>固定配置股票权重</td><td>50% / 60% / 70%</td><td>4.97%—5.00%</td><td>0.374—0.525</td><td>20.75%—31.51%</td></tr><tr><td>风险平价窗口</td><td>30日 / 60日 / 120日</td><td>4.41%—4.47%</td><td>4.868—4.980</td><td>0.77%—0.88%</td></tr><tr><td>最小方差窗口</td><td>60日 / 120日 / 240日</td><td>4.65%—4.65%</td><td>1.237—1.237</td><td>4.30%—4.30%</td></tr><tr><td>最小方差股票下限</td><td>0% / 10% / 20% / 30%</td><td>4.35%—4.81%</td><td>0.849—6.296</td><td>0.96%—9.07%</td></tr><tr><td>波动率目标窗口</td><td>30日 / 60日 / 120日</td><td>4.59%—5.71%</td><td>0.464—0.570</td><td>23.73%—26.50%</td></tr><tr><td>目标年化波动率</td><td>8% / 10% / 12%</td><td>5.04%—5.18%</td><td>0.470—0.575</td><td>23.50%—26.89%</td></tr><tr><td>目标日期起始股票权重</td><td>60% / 70% / 80%</td><td>5.85%—6.48%</td><td>0.645—0.713</td><td>15.41%—19.42%</td></tr><tr><td>目标日期终点股票权重</td><td>20% / 30% / 40%</td><td>5.91%—6.41%</td><td>0.587—0.774</td><td>14.65%—20.53%</td></tr><tr><td>目标日期滑降期限</td><td>1008日 / 1260日 / 1512日</td><td>5.93%—6.45%</td><td>0.623—0.745</td><td>14.65%—19.24%</td></tr></tbody></table></div>
+<p class="small">数值注：三个最小方差窗口在正式期的 94 个生效信号上，股票目标权重均为 20%。表中相同结果来自仓位下限持续约束，差别仅为浮点数精度。股票下限为 0% 时，年化波动约 0.69%，因此 Sharpe 可达 6.296；高比率同时伴随仅 4.35% 的年化收益。</p></details></div>
+<div class="chart-block"><h3>2. 资产替换检验</h3><p><strong>方法：</strong>长样本比较六组股债资产对，短样本加入科创 50、政金债 ETF 后比较十二组；每组均运行七类策略，并统一各自样本的比较区间。</p><p><strong>主要结论：</strong>目标日期在六组长样本中年化收益均居首；短样本的五种配置策略中，波动率目标在十二组均居首。领先策略会随市场阶段和滑降起点变化。</p><details class="bond-details"><summary>展开资产替换图表与长短样本结果</summary><div class="robustness-controls"><label>比较区间 <select id="asset-cohort"><option>长样本</option><option>短样本</option></select></label><label>指标 <select id="asset-metric"><option>年化收益率</option><option>夏普比率</option><option>最大回撤</option></select></label></div><div id="asset-substitution-chart" class="robustness-plot" role="img" aria-label="股债资产替换策略结果热力图"></div>
+<h4>资产替换检验：长样本</h4>
+<p class="small">股票取沪深 300、中证 500、上证综指，债券取上证国债、上证企债指数，形成 3×2＝6 组股债对。每组运行全部七类策略，共 42 个情景；共同日期、2018 年预热和 2019-01-02—2026-10-16 的 1,887 个价格交易日完全一致。每次仍只持有一股一债，替换检验没有扩大组合持仓数量。</p>
+<div class="card table-wrap robustness-table"><table aria-label="资产替换检验：长样本"><thead><tr><th>策略</th><th>年化收益范围</th><th>Sharpe 范围</th><th>最大回撤范围</th></tr></thead><tbody><tr><td>全股</td><td>4.64%—6.83%</td><td>0.244—0.337</td><td>27.27%—45.60%</td></tr><tr><td>全债</td><td>4.21%—4.34%</td><td>5.889—16.825</td><td>0.11%—1.02%</td></tr><tr><td>60/40</td><td>5.00%—6.66%</td><td>0.439—0.546</td><td>13.74%—26.48%</td></tr><tr><td>风险平价</td><td>4.40%—4.44%</td><td>4.850—11.418</td><td>0.18%—0.79%</td></tr><tr><td>最小方差</td><td>4.65%—5.39%</td><td>1.186—1.440</td><td>3.35%—5.36%</td></tr><tr><td>波动率目标</td><td>5.18%—7.07%</td><td>0.511—0.655</td><td>14.28%—26.65%</td></tr><tr><td>目标日期</td><td>5.82%—7.20%</td><td>0.671—0.727</td><td>10.39%—17.83%</td></tr></tbody></table></div>
+<p class="small">数值注：全债 Sharpe 的上限 16.825 对应上证企债指数，年化收益 4.34%、年化波动约 0.258%。比率由很小的波动分母放大，按现行口径复算一致；该统计值仅反映此价格序列，实际产品的信用利差、流动性及费用影响仍需单独核验。各列范围的极值也未必对应同一资产对。</p>
+<h4>资产替换检验：短样本</h4>
+<p class="small">在上述资产中再加入科创 50 与政金债 ETF，形成 4×3＝12 组股债对、84 个策略情景。全部组合统一使用 2024-01-02—2026-10-16 的 673 个价格交易日，共同预热价格从 2023-05-17 开始。目标日期策略同步从 2024 年起滑降，只覆盖五年路径的前段；不与长样本收益直接作高低判断。</p>
+<div class="card table-wrap robustness-table"><table aria-label="资产替换检验：短样本"><thead><tr><th>策略</th><th>年化收益范围</th><th>Sharpe 范围</th><th>最大回撤范围</th></tr></thead><tbody><tr><td>全股</td><td>8.12%—19.77%</td><td>0.339—0.534</td><td>14.73%—38.46%</td></tr><tr><td>全债</td><td>3.98%—5.08%</td><td>2.128—19.714</td><td>0.02%—2.60%</td></tr><tr><td>60/40</td><td>7.06%—17.12%</td><td>0.524—0.799</td><td>7.98%—23.94%</td></tr><tr><td>风险平价</td><td>4.07%—7.93%</td><td>2.309—12.803</td><td>0.08%—1.86%</td></tr><tr><td>最小方差</td><td>5.21%—10.12%</td><td>1.113—1.793</td><td>1.74%—7.84%</td></tr><tr><td>波动率目标</td><td>7.74%—18.28%</td><td>0.828—1.363</td><td>7.98%—10.76%</td></tr><tr><td>目标日期</td><td>7.67%—17.20%</td><td>0.542—0.811</td><td>8.81%—20.23%</td></tr></tbody></table></div>
+<p class="small">数值注：短样本企债全债的年化收益为 3.98%，波动约 0.202%，Sharpe 因而达到 19.714；最大回撤未四舍五入为 0.0240%（表中 0.02%），Calmar 达到 165.455。这些数值由当前价格序列和指标口径计算得到，极小风险分母会放大比率，仍需以可交易全收益品种复核其经济含义。</p></details></div>
+<div class="chart-block"><h3>3. 信号日期检验</h3><p><strong>方法：</strong>分别在每月 15 日或之前最近共同交易日、月末形成信号，下一交易日收盘执行。统一截至 2026-09-30，两组各有 93 个执行时点。</p><p><strong>主要结论：</strong>改用月中信号后，波动率目标年化收益减少 47.8bp，目标日期减少 15.0bp；波动率目标对具体信号日期更敏感。</p><details class="bond-details"><summary>展开月中与月末信号对照结果</summary>
+<p class="small">月中取每月 15 日或之前最近一个共同交易日，月末取最后一个交易日，均在信号收盘后计算权重、下一交易日收盘执行。为避免末月仅含月中信号，两组统一截至 2026-09-30，从 2019-01-02 起共 1,880 个价格交易日、各 93 个执行时点。七类策略均参与；全股、全债无有效调仓，两种日期的结果相同，下表列五种配置策略。</p>
+<div class="card table-wrap robustness-table"><table aria-label="信号日期检验"><thead><tr><th>策略</th><th>年化收益（月末→月中）</th><th>Sharpe（月末→月中）</th><th>最大回撤（月末→月中）</th></tr></thead><tbody><tr><td>60/40</td><td>5.37%→5.21%</td><td>0.471→0.455</td><td>26.30%→26.31%</td></tr><tr><td>风险平价</td><td>4.40%→4.36%</td><td>4.855→4.728</td><td>0.77%→0.81%</td></tr><tr><td>最小方差</td><td>4.77%→4.65%</td><td>1.265→1.224</td><td>4.30%→4.30%</td></tr><tr><td>波动率目标</td><td>5.48%→5.00%</td><td>0.542→0.493</td><td>26.50%→26.41%</td></tr><tr><td>目标日期</td><td>6.35%→6.20%</td><td>0.696→0.678</td><td>17.43%→17.35%</td></tr></tbody></table></div>
+<p class="small">口径注：本表截至 2026-09-30，主回测、频率与成本检验截至 2026-10-16。同一月末策略的年化收益因此可能不同，例如波动率目标为 5.48% 与 5.18%；这是统计终点差异，应在同一表、同一日期区间内比较。</p></details></div>
+<div class="chart-block"><h3>4. 调仓频率检验</h3><p><strong>方法：</strong>五种配置策略分别按月末、季末信号调仓，执行时点为 94 次、32 次；目标日期共用相同的起点和 1,260 个交易日滑降期限。</p><p><strong>主要结论：</strong>目标日期年化收益为 6.17%→6.23%，Sharpe 为 0.677→0.679，变化较小；波动率目标年化收益由 5.18% 降至 4.27%，对频率更敏感。</p><details class="bond-details"><summary>展开月度与季度调仓结果</summary>
+<p class="small">五种配置策略分别在月末、季末收盘后形成信号，并于下一交易日收盘执行，共 10 个情景。均使用沪深 300＋国债指数、2019-01-02—2026-10-16 的 1,887 个价格交易日、2018 年预热和单边 10bp 成本。月度与季度分别有 94、32 个执行时点；目标日期保持相同的 2019 年滑降起点和 1,260 日期限。</p>
+<div class="card table-wrap robustness-table"><table aria-label="调仓频率检验"><thead><tr><th>策略</th><th>年化收益（月度→季度）</th><th>Sharpe（月度→季度）</th><th>最大回撤（月度→季度）</th></tr></thead><tbody><tr><td>60/40</td><td>5.00%→5.06%</td><td>0.439→0.445</td><td>26.30%→26.16%</td></tr><tr><td>风险平价</td><td>4.41%→4.33%</td><td>4.868→4.773</td><td>0.77%→0.89%</td></tr><tr><td>最小方差</td><td>4.65%→4.70%</td><td>1.237→1.251</td><td>4.30%→4.21%</td></tr><tr><td>波动率目标</td><td>5.18%→4.27%</td><td>0.514→0.421</td><td>26.50%→24.90%</td></tr><tr><td>目标日期</td><td>6.17%→6.23%</td><td>0.677→0.679</td><td>17.43%→17.45%</td></tr></tbody></table></div></details></div>
+<div class="chart-block"><h3>5. 交易成本检验</h3><p><strong>方法：</strong>五种配置策略均比较单边 0、10、30bp 成本，共 15 个情景，按调仓的双边换手金额扣费。</p><p><strong>主要结论：</strong>单边成本由 0 提至 30bp 后，波动率目标年化收益损耗 35.8bp，其余四种为 5.5—8.4bp；波动率目标的成本敏感度最高。</p><details class="bond-details"><summary>展开五种配置策略的三档成本完整结果</summary>
+<p class="small">五种配置策略均在单边 0、10、30bp 下进行月末调仓，共 15 个配置情景；资产、2019-01-02—2026-10-16 的报告区间及策略参数均保持不变。每次按买入和卖出金额合计扣费，即单边费率乘以双边换手金额。下表展示全部五种配置策略的年化收益与相对零成本的损耗，逐档波动、Sharpe、回撤、Calmar 和月度胜率见完整结果表。</p>
+<div class="card table-wrap robustness-table"><table aria-label="交易成本检验"><thead><tr><th>策略</th><th>0bp</th><th>10bp</th><th>30bp</th><th>30bp 年化收益损耗</th></tr></thead><tbody><tr><td>60/40</td><td>5.03%</td><td>5.00%</td><td>4.94%</td><td>8.4bp</td></tr><tr><td>风险平价</td><td>4.42%</td><td>4.41%</td><td>4.37%</td><td>5.5bp</td></tr><tr><td>最小方差</td><td>4.67%</td><td>4.65%</td><td>4.62%</td><td>5.6bp</td></tr><tr><td>波动率目标</td><td>5.30%</td><td>5.18%</td><td>4.95%</td><td>35.8bp</td></tr><tr><td>目标日期</td><td>6.20%</td><td>6.17%</td><td>6.11%</td><td>8.3bp</td></tr></tbody></table></div>
+<div class="card table-wrap robustness-table"><table aria-label="五种配置策略逐档交易成本完整结果"><thead><tr><th>策略</th><th>单边成本</th><th>年化收益</th><th>年化波动</th><th>Sharpe</th><th>最大回撤</th><th>Calmar</th><th>月度胜率</th></tr></thead><tbody><tr><td>60/40</td><td>0bp</td><td>5.03%</td><td>11.39%</td><td>0.441</td><td>26.25%</td><td>0.191</td><td>47.87%</td></tr><tr><td>60/40</td><td>10bp</td><td>5.00%</td><td>11.39%</td><td>0.439</td><td>26.30%</td><td>0.190</td><td>47.87%</td></tr><tr><td>60/40</td><td>30bp</td><td>4.94%</td><td>11.39%</td><td>0.434</td><td>26.40%</td><td>0.187</td><td>47.87%</td></tr><tr><td>风险平价</td><td>0bp</td><td>4.42%</td><td>0.91%</td><td>4.882</td><td>0.76%</td><td>5.784</td><td>82.98%</td></tr><tr><td>风险平价</td><td>10bp</td><td>4.41%</td><td>0.91%</td><td>4.868</td><td>0.77%</td><td>5.729</td><td>82.98%</td></tr><tr><td>风险平价</td><td>30bp</td><td>4.37%</td><td>0.90%</td><td>4.838</td><td>0.78%</td><td>5.621</td><td>82.98%</td></tr><tr><td>最小方差</td><td>0bp</td><td>4.67%</td><td>3.77%</td><td>1.241</td><td>4.30%</td><td>1.087</td><td>55.32%</td></tr><tr><td>最小方差</td><td>10bp</td><td>4.65%</td><td>3.76%</td><td>1.237</td><td>4.30%</td><td>1.081</td><td>55.32%</td></tr><tr><td>最小方差</td><td>30bp</td><td>4.62%</td><td>3.76%</td><td>1.227</td><td>4.31%</td><td>1.070</td><td>55.32%</td></tr><tr><td>波动率目标</td><td>0bp</td><td>5.30%</td><td>10.10%</td><td>0.525</td><td>26.30%</td><td>0.202</td><td>47.87%</td></tr><tr><td>波动率目标</td><td>10bp</td><td>5.18%</td><td>10.10%</td><td>0.514</td><td>26.50%</td><td>0.196</td><td>47.87%</td></tr><tr><td>波动率目标</td><td>30bp</td><td>4.95%</td><td>10.08%</td><td>0.490</td><td>26.88%</td><td>0.184</td><td>47.87%</td></tr><tr><td>目标日期</td><td>0bp</td><td>6.20%</td><td>9.11%</td><td>0.680</td><td>17.40%</td><td>0.356</td><td>50.00%</td></tr><tr><td>目标日期</td><td>10bp</td><td>6.17%</td><td>9.11%</td><td>0.677</td><td>17.43%</td><td>0.354</td><td>50.00%</td></tr><tr><td>目标日期</td><td>30bp</td><td>6.11%</td><td>9.11%</td><td>0.671</td><td>17.49%</td><td>0.350</td><td>50.00%</td></tr></tbody></table></div>
+<p class="small">口径注：损耗按未四舍五入的收益计算，8.4bp 表示年化收益少约 0.084 个百分点，全股、全债的三档成本结果也已保存，但因无再平衡换手而相同；这不代表实际产品交易免费，回测未计初始建仓和持有费用。</p>
+<p class="small">数值注：成本升高时，年化波动也可能略降，因为调仓扣费改变了逐日净值收益；例如波动率目标由 10.102% 降至 10.083%。这不是风险控制改善，其 Sharpe 同时由 0.525 降至 0.490、回撤由 26.30% 升至 26.88%。</p></details></div>
+    </section>
+    <section id="discussion">
+<div class="section-head"><div><span class="section-no">07 · 研究讨论</span><h2>讨论与局限性</h2></div></div>
+<h3>7.1 研究局限</h3>
+<p><strong>资产与策略空间有限。</strong> 主回测只有一个股票指数和一个债券指数，在不做空、不加杠杆的约束下，各策略主要调整一个股票权重。缺少更多权益风格、债券期限和其他资产，限制了跨资产风险分散、对冲及更复杂组合策略的实现，也限制了探索更高风险调整收益的途径。增加资产或模型复杂度本身并不保证 Sharpe 提高，仍需检验新增资产是否提供稳定的分散效果及可实现收益。</p>
+<p><strong>稳健性证据仍有边界。</strong> 参数敏感性、资产替换、信号日期、调仓频率和交易成本检验反映既定样本内的设定依赖，尚未提供独立样本外证据或多个完整五年投资周期；邻近参数、共享资产及重叠交易日也不构成独立样本。目标日期对月度／季度调仓相对稳定，但长短样本的排名差异说明其优势仍可能依赖市场阶段。Sharpe 采用几何年化收益除以对数收益年化波动率、无风险利率设为 0，低波动债券策略的高比率需要结合该口径理解。</p>
+<p><strong>交易模拟与实际操作有差距。</strong> 回测按下一交易日收盘价完成调仓，以固定费率计提成本，未模拟初始建仓成本、买卖价差、冲击成本、流动性约束及成交失败。实际投资还需使用可交易产品，承担跟踪误差、申赎和费用差异。尤其对持续调整股票敞口的波动率目标策略，历史信号的可用性、成交时点和真实成本可能共同改变净值路径。</p>
+<h3>7.2 策略表现与稳健性讨论</h3>
+<p><strong>固定滑降路径取得最高收益。</strong> 目标日期年化收益 6.17%，高于全股的 4.64%，同时回撤更低。其权重由预设时间表决定，这一表现可能与较高股票仓位遇到前段上涨、随后降仓遇到后段调整的市场顺序有关。还应注意，滑降只持续前 1,260 个交易日，之后维持 30% 股票目标；2019—2026 年的整体结果包含滑降完成后的尾段，并非多个独立五年投资周期的验证。</p>
+<p><strong>风险平价的回撤低于全债。</strong> 风险平价最大回撤仅 0.77%，低于全债的 1.02%，Sharpe 达到 4.868，但年化收益为 4.41%。债券波动显著低于股票，倒数波动率配权使组合长期偏向债券；少量股票在本次路径中进一步平滑了部分回撤。其高 Sharpe 首先反映低波动分母和当前指标口径，仍需用可交易资产及统一的超额收益口径复核。</p>
+<p><strong>最小方差的低风险高度依赖仓位下限。</strong> 将协方差窗口由 60 日改为 240 日，绩效几乎完全相同；将股票下限从 0% 改为 30%，回撤却从 0.96% 升至 9.07%。原设定下平均股票权重约 19.96%，低风险主要与仓位边界有关，窗口不敏感不能直接视为估计质量的证据。后续仍可加入固定 20/80 对照，单独衡量滚动协方差相对固定低股票比例的贡献。</p>
+<p><strong>降低波动率仍可能经历更深回撤。</strong> 波动率目标把年化波动率从 60/40 的 11.39% 降至 10.10%，最大回撤却由 26.30% 略升至 26.50%。参数与信号日期检验中，窗口与信号日期也改变了收益表现，而短样本中该策略反而在全部十二组的五种股债配置策略间领先。波动率、回撤与收益刻画不同目标，单一历史排名不足以替代对参数和市场阶段的讨论。</p>
     </section>
   </main>
-  <div class="conclusion"><div class="wrap"><section id="conclusion">
-    <span class="section-no">07 · 综合判断</span><h2>配置建议与研究局限</h2>
-    <p class="section-intro" style="margin:20px 0 28px">以目标日期策略作为五年期稳健增值资金的样本内主方案，固定 60/40 作为透明基准，滚动最小方差作为保守参照。使用时持续监控股票仓位、股债相关、利率风险与交易成本。</p>
-    <div class="grid three">
-      <div class="card"><h3>样本路径</h3><p>目标日期策略前期高股票、后期逐步降仓，恰好与本样本的市场时序较为匹配；未来收益顺序不同，优势可能消失。</p></div>
-      <div class="card"><h3>资产与模型</h3><p>债券指数点位不是可直接交易的全收益产品。零息债、单利率因子和简化压力情景无法覆盖票息、利差、流动性及产品跟踪误差。</p></div>
-      <div class="card"><h3>样本外验证</h3><p>七类策略在同一窗口比较，尚无独立验证期、走步回测和绩效差异显著性检验。参数、窗口和成本变化仍需进一步测试。</p></div>
-    </div>
-  </section></div></div>
-  <footer><div class="wrap">详细方法、数据口径与小组分工见 <a href="项目报告.md">项目报告</a>和 <a href="../README.md">运行与复现说明</a>。图表基于仓库已有分析输出，均可离线交互查看。</div></footer>
+  <footer><div class="wrap">详细方法、数据口径与小组分工见 <a href="项目报告.md">项目报告</a>和 <a href="../README.md">运行与复现说明</a>。</div></footer>
   <script>
     function resizePlotlyFrame(frame) {
       try {

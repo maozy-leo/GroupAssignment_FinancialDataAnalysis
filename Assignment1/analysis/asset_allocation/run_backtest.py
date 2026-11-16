@@ -23,6 +23,7 @@ import plotly.graph_objects as go
 
 from backtester import Backtester, compute_metrics
 from data_loader import AssetAllocationDataLoader
+from robustness import RobustnessRunner
 from strategies import (
     AllBondStrategy,
     AllStockStrategy,
@@ -235,7 +236,7 @@ def run_robustness_checks(
     prices: pd.DataFrame,
     monthly_signals: pd.DataFrame,
 ) -> pd.DataFrame:
-    """稳健性检验：调仓频率对比与股票代理对比。
+    """稳健性检验：五种配置策略的调仓频率及股票代理对比。
 
     Args:
         loader: 数据读取器。
@@ -255,15 +256,22 @@ def run_robustness_checks(
         RiskParityStrategy(),
         RollingMinimumVarianceStrategy(),
         VolatilityTargetStrategy(),
+        TargetDateStrategy(start_date=REPORT_START_DATE),
     )
     for strategy in frequency_strategies:
         for label, sig in (("月度", monthly_signals), ("季度", quarterly_signals)):
-            nav = _run_strategy_nav(backtester, prices, strategy, sig)
+            nav = _run_strategy_nav(
+                backtester,
+                prices,
+                strategy,
+                sig,
+            )
             rows.append(
                 {
                     "section": "调仓频率",
                     "strategy": strategy.name,
                     "variant": label,
+                    "cost_bp": 10,
                     **compute_metrics(nav),
                 }
             )
@@ -275,7 +283,12 @@ def run_robustness_checks(
         ("沪深300(CSI300)", prices, monthly_signals),
         ("上证综指(SSE_COMPOSITE)", sse_prices, sse_signals),
     ):
-        nav = _run_strategy_nav(backtester, p, SixtyFortyStrategy(), s)
+        nav = _run_strategy_nav(
+            backtester,
+            p,
+            SixtyFortyStrategy(),
+            s,
+        )
         rows.append(
             {
                 "section": "股票代理",
@@ -307,7 +320,12 @@ def run_cost_sensitivity(
     for cost_bp in cost_rates_bp:
         backtester = Backtester(cost_rate=cost_bp / 10000.0)
         for strategy in build_strategies():
-            nav = _run_strategy_nav(backtester, prices, strategy, signals)
+            nav = _run_strategy_nav(
+                backtester,
+                prices,
+                strategy,
+                signals,
+            )
             rows.append(
                 {
                     "section": "成本敏感性",
@@ -429,6 +447,9 @@ def main() -> None:
 
     # 7) 保存稳健性/敏感性结果。
     save_robustness_results(robustness, sensitivity)
+
+    # 8) 参数、扩大资产替换与月中/月末信号检验。
+    RobustnessRunner(loader).run(OUTPUT_DIR)
 
     print("=" * 72)
     print("模块 4 回测完成")

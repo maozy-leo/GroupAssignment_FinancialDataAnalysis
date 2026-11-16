@@ -268,3 +268,50 @@ class AssetAllocationDataLoader:
             ``equity_close``、``bond_close``。
         """
         return self._extract_period_end_signals(prices, freq="Q")
+
+    def extract_mid_month_signals(self, prices: pd.DataFrame) -> pd.DataFrame:
+        """提取每月 15 日或之前最近共同交易日的收盘信号。
+
+        Args:
+            prices: 按日期升序、日期唯一的共同价格表，含 ``trade_date``、
+                ``equity_close`` 与 ``bond_close``。
+
+        Returns:
+            与月末信号相同结构的 DataFrame。执行日在共同价格日历中顺延
+            一天；尚未覆盖当月 15 日的末月不产生信号。
+
+        Raises:
+            ValueError: 日期为空、重复或未按升序排列。
+
+        Notes:
+            使用两资产的共同交易日，避免替换资产后出现无价格的执行日。
+            周末或节假日采用 15 日之前最近的共同交易日。
+        """
+        dates = pd.to_datetime(prices["trade_date"])
+        if dates.empty or dates.duplicated().any() or not dates.is_monotonic_increasing:
+            raise ValueError("'prices.trade_date' must be nonempty, unique and sorted.")
+
+        calendar = prices.copy()
+        calendar["trade_date"] = dates
+        calendar["next_trade_date"] = dates.shift(-1)
+        calendar["period"] = dates.dt.strftime("%Y-%m")
+        calendar["midpoint"] = dates.dt.to_period("M").dt.to_timestamp()
+        calendar["midpoint"] += pd.Timedelta(days=14)
+        candidates = calendar[
+            (dates <= calendar["midpoint"])
+            & (calendar["midpoint"] <= dates.max())
+        ]
+        signals = candidates.groupby("period", sort=True).tail(1)
+        signals = signals.dropna(subset=["next_trade_date"])
+        return (
+            signals.rename(columns={"trade_date": "signal_date"})[
+                [
+                    "period",
+                    "signal_date",
+                    "next_trade_date",
+                    EQUITY_PRICE_COLUMN,
+                    BOND_PRICE_COLUMN,
+                ]
+            ]
+            .reset_index(drop=True)
+        )
